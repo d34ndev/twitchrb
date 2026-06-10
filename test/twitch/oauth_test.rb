@@ -148,7 +148,6 @@ class OAuthTest < WebmockTest
       .to_return(status: 400, body: { status: 400, message: "Invalid token" }.to_json,
         headers: { "Content-Type" => "application/json" })
 
-    # revoke returns true even on error responses (matches existing behavior)
-    assert_equal true, @oauth.revoke(token: "invalid_token")
+    assert_equal false, @oauth.revoke(token: "invalid_token")
   end
 end

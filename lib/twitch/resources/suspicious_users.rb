@@ -19,6 +19,9 @@ module Twitch
         "moderation/suspicious_users?broadcaster_id=#{broadcaster_id}&moderator_id=#{moderator_id}&user_id=#{user_id}"
       )
 
+      # delete_request returns true for 204 No Content responses
+      return true unless response.respond_to?(:body)
+
       SuspiciousUser.new(response.body.dig("data")[0])
     end
   end

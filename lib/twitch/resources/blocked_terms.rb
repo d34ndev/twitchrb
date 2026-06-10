@@ -13,7 +13,7 @@ module Twitch
     def create(broadcaster_id:, moderator_id:, text:)
       attrs = { broadcaster_id: broadcaster_id, moderator_id: moderator_id, text: text }
       response = post_request("moderation/blocked_terms", body: attrs)
-      BannedUser.new response.body.dig("data")[0]
+      BlockedTerm.new response.body.dig("data")[0]
     end
 
     # Required scope: moderator:manage:blocked_terms

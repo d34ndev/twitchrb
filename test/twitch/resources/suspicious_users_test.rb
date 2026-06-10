@@ -71,4 +71,18 @@ class SuspiciousUsersResourceTest < WebmockTest
     assert_equal "9876", user.user_id
     assert_equal "NO_TREATMENT", user.status
   end
+
+  def test_suspicious_users_delete_with_no_content_response
+    stub_request(:delete, "#{HELIX_URL}/moderation/suspicious_users")
+      .with(query: { "broadcaster_id" => "123", "moderator_id" => "321", "user_id" => "9876" })
+      .to_return(status: 204, body: "")
+
+    result = @client.suspicious_users.delete(
+      broadcaster_id: "123",
+      moderator_id: "321",
+      user_id: "9876"
+    )
+
+    assert_equal true, result
+  end
 end

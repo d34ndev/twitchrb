@@ -43,9 +43,7 @@ module Twitch
         token: token
       })
 
-      JSON.parse(response.body, object_class: OpenStruct) if response.status != 200
-
-      true
+      response.status == 200
     end
 
     private

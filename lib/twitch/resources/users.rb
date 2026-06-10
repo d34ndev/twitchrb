@@ -31,7 +31,6 @@ module Twitch
     def get_color(user_id: nil, user_ids: nil)
       if user_ids != nil
         users = user_ids.split(",").map { |i| "user_id=#{i.strip}" }.join("&")
-        puts "chat/color?#{users}"
         response = get_request("chat/color?#{users}")
         Collection.from_response(response, type: UserColor)
       else
