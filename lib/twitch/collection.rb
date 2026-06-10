@@ -6,10 +6,11 @@ module Twitch
 
     def self.from_response(response, type:)
       body = response.body
+      data = body["data"] || []
 
       new(
-        data: body["data"].map { |attrs| type.new(attrs) },
-        total: body["data"].count,
+        data: data.map { |attrs| type.new(attrs) },
+        total: body["total"] || data.count,
         cursor: body.dig("pagination", "cursor")
       )
     end
@@ -17,7 +18,7 @@ module Twitch
     def initialize(data:, total:, cursor:)
       @data = data
       @total = total
-      @cursor = cursor.nil? ? nil : cursor
+      @cursor = cursor
     end
 
     def each(&block)
