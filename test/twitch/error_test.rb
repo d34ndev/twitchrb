@@ -29,6 +29,12 @@ class ErrorTest < Minitest::Test
     assert_equal "Connection failed", error.message
   end
 
+  def test_api_errors_are_rescuable_as_twitch_error
+    error = Twitch::ErrorFactory.create({ "error" => "Bad Request" }, 400)
+
+    assert_kind_of Twitch::Error, error
+  end
+
   def test_eventsub_subscription_conflict_error_exposes_existing_id
     error = Twitch::Errors::EventsubSubscriptionConflictError.new(
       { "error" => "Conflict", "message" => "subscription already exists" },

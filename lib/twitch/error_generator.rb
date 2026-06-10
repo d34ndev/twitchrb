@@ -1,5 +1,5 @@
 module Twitch
-  class ErrorGenerator < StandardError
+  class ErrorGenerator < Error
     attr_reader :http_status_code
     attr_reader :twitch_error_code
     attr_reader :twitch_error_message
