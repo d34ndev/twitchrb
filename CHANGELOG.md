@@ -4,6 +4,28 @@ All notable changes to `twitchrb` are documented in this file.
 
 Published release notes were sourced from GitHub releases where available. Older tag-only versions and the current unreleased work were reconstructed from local git history.
 
+## [Unreleased]
+
+### Fixed
+- Fixed a `NoMethodError` crash when API responses have non-JSON bodies, such as `stream_schedule.icalendar` (which was completely broken) and HTML error pages from proxies.
+- Fixed `users.retrieve` and `games.retrieve` returning `nil` when a plural lookup (`ids`, `usernames`, `names`) matched exactly one item; plural lookups now always return a `Collection`. Singular lookups with no match now return `nil` instead of an empty object.
+- Fixed `oauth.revoke` always returning `true`; it now returns `false` when revocation fails, matching `validate`, `create`, and `refresh`.
+- Fixed `blocked_terms.create` returning a `BannedUser` instead of a `BlockedTerm`.
+- Fixed `suspicious_users.delete` crashing on 204 No Content responses; it now returns `true`.
+- Fixed query string values not being escaped in request paths. Notably, `users.update_color` silently dropped hex colors like `#9146FF`.
+- Errors are now raised for any 4xx/5xx response; previously 422, 502, and 504 slipped through unraised.
+- `Collection#total` now reports the `total` field from the API for paginated endpoints instead of the page size, and responses without a `data` key return an empty collection instead of raising.
+- Removed a leftover debug `puts` in `users.get_color`.
+- Error messages for unmapped statuses no longer duplicate the Twitch message.
+
+### Changed
+- The `auto_retry_rate_limit` client option (default `true`) now works: requests that hit a 429 wait until the rate limit window resets and retry once. Previously the option was accepted but ignored.
+- All API errors now inherit from `Twitch::Error`, so they can be rescued with a single base class.
+- `eventsub_subscriptions.create` now goes through the shared request helpers, gaining request path validation and rate limit auto-retry.
+
+### Added
+- `users.get_color` accepts an array for `user_ids`, in line with other multi-id endpoints. Comma-separated strings still work.
+
 ## [1.10.0] - 2026-05-16
 
 ### Added
