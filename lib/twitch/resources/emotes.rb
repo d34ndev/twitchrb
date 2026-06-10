@@ -1,7 +1,7 @@
 module Twitch
   class EmotesResource < Resource
     def channel(broadcaster_id:)
-      response = get_request("chat/emotes?broadcaster_id=#{broadcaster_id}")
+      response = get_request("chat/emotes", params: { broadcaster_id: broadcaster_id })
       Collection.from_response(response, type: Emote)
     end
 
@@ -11,7 +11,7 @@ module Twitch
     end
 
     def sets(emote_set_id:)
-      response = get_request("chat/emotes/set?emote_set_id=#{emote_set_id}")
+      response = get_request("chat/emotes/set", params: { emote_set_id: emote_set_id })
       Collection.from_response(response, type: Emote)
     end
   end

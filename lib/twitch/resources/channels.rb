@@ -1,7 +1,7 @@
 module Twitch
   class ChannelsResource < Resource
     def retrieve(id:)
-      Channel.new get_request("channels?broadcaster_id=#{id}").body.dig("data")[0]
+      Channel.new get_request("channels", params: { broadcaster_id: id }).body.dig("data")[0]
     end
 
     # Retrieve a list of broadcasters a specified user follows
@@ -42,12 +42,12 @@ module Twitch
 
     # Requires scope: channel:read:editors
     def editors(broadcaster_id:)
-      response = get_request("channels/editors?broadcaster_id=#{broadcaster_id}")
+      response = get_request("channels/editors", params: { broadcaster_id: broadcaster_id })
       Collection.from_response(response, type: ChannelEditor)
     end
 
     def stream_key(broadcaster_id:)
-      response = get_request("streams/key?broadcaster_id=#{broadcaster_id}")
+      response = get_request("streams/key", params: { broadcaster_id: broadcaster_id })
       StreamKey.new(response.body.dig("data")[0])
     end
 

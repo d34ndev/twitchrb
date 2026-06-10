@@ -19,7 +19,7 @@ module Twitch
     # Required scope: moderator:manage:blocked_terms
     # moderator_id must match the currently authenticated user. Can be either the broadcaster ID or moderator ID
     def delete(broadcaster_id:, moderator_id:, id:)
-      delete_request("moderation/blocked_terms?broadcaster_id=#{broadcaster_id}&moderator_id=#{moderator_id}&id=#{id}")
+      delete_request("moderation/blocked_terms", params: { broadcaster_id: broadcaster_id, moderator_id: moderator_id, id: id })
     end
   end
 end

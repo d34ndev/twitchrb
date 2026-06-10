@@ -29,12 +29,13 @@ module Twitch
     end
 
     def get_color(user_id: nil, user_ids: nil)
-      if user_ids != nil
-        users = user_ids.split(",").map { |i| "user_id=#{i.strip}" }.join("&")
-        response = get_request("chat/color?#{users}")
+      if user_ids
+        ids = user_ids.is_a?(Array) ? user_ids : user_ids.split(",")
+        query = URI.encode_www_form(ids.map { |i| [ "user_id", i.to_s.strip ] })
+        response = get_request("chat/color?#{query}")
         Collection.from_response(response, type: UserColor)
       else
-        response = get_request("chat/color?user_id=#{user_id}")
+        response = get_request("chat/color", params: { user_id: user_id })
         UserColor.new response.body.dig("data")[0]
       end
     end
@@ -43,7 +44,7 @@ module Twitch
     # Required scope: user:manage:chat_color
     # user_id must be the currently authenticated user
     def update_color(user_id:, color:)
-      put_request("chat/color?user_id=#{user_id}&color=#{color}", body: {})
+      put_request("chat/color?#{URI.encode_www_form(user_id: user_id, color: color)}", body: {})
     end
 
     # Deprecated.
@@ -58,18 +59,18 @@ module Twitch
 
     # Required scope: user:read:blocked_users
     def blocks(broadcaster_id:, **params)
-      response = get_request("users/blocks?broadcaster_id=#{broadcaster_id}", params: params)
+      response = get_request("users/blocks", params: params.merge(broadcaster_id: broadcaster_id))
       Collection.from_response(response, type: BlockedUser)
     end
 
     # Required scope: user:manage:blocked_users
     def block_user(target_user_id:, **attributes)
-      put_request("users/blocks?target_user_id=#{target_user_id}", body: attributes)
+      put_request("users/blocks?#{URI.encode_www_form(target_user_id: target_user_id)}", body: attributes)
     end
 
     # Required scope: user:manage:blocked_users
     def unblock_user(target_user_id:)
-      delete_request("users/blocks?target_user_id=#{target_user_id}")
+      delete_request("users/blocks", params: { target_user_id: target_user_id })
     end
 
     # A quick method to see if a user is following a channel

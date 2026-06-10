@@ -1,7 +1,7 @@
 module Twitch
   class BadgesResource < Resource
     def channel(broadcaster_id:)
-      response = get_request("chat/badges?broadcaster_id=#{broadcaster_id}")
+      response = get_request("chat/badges", params: { broadcaster_id: broadcaster_id })
       Collection.from_response(response, type: Badge)
     end
 

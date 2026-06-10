@@ -5,7 +5,7 @@ module Twitch
     def create(broadcaster_id:, moderator_id:, user_id:, status:)
       attrs = { user_id: user_id, status: status }
       response = post_request(
-        "moderation/suspicious_users?broadcaster_id=#{broadcaster_id}&moderator_id=#{moderator_id}",
+        "moderation/suspicious_users?#{URI.encode_www_form(broadcaster_id: broadcaster_id, moderator_id: moderator_id)}",
         body: attrs
       )
 
@@ -16,7 +16,8 @@ module Twitch
     # moderator_id must match the currently authenticated moderator
     def delete(broadcaster_id:, moderator_id:, user_id:)
       response = delete_request(
-        "moderation/suspicious_users?broadcaster_id=#{broadcaster_id}&moderator_id=#{moderator_id}&user_id=#{user_id}"
+        "moderation/suspicious_users",
+        params: { broadcaster_id: broadcaster_id, moderator_id: moderator_id, user_id: user_id }
       )
 
       # delete_request returns true for 204 No Content responses

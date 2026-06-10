@@ -65,4 +65,31 @@ class UsersResourceTest < WebmockTest
   def test_users_retrieve_raises_without_args
     assert_raises(RuntimeError) { @client.users.retrieve }
   end
+
+  def test_users_update_color_escapes_hex_colors
+    stub_request(:put, "#{HELIX_URL}/chat/color")
+      .with(query: { "user_id" => "123", "color" => "#9146FF" })
+      .to_return(status: 204, body: "")
+
+    assert_equal true, @client.users.update_color(user_id: "123", color: "#9146FF")
+  end
+
+  def test_users_get_color_accepts_an_array_of_ids
+    stub_request(:get, "#{HELIX_URL}/chat/color?user_id=11111&user_id=44444")
+      .to_return(
+        status: 200,
+        body: {
+          data: [
+            { user_id: "11111", user_login: "speedspeed", user_name: "SpeedSpeed", color: "#9146FF" },
+            { user_id: "44444", user_login: "twitchdev", user_name: "TwitchDev", color: "" }
+          ]
+        }.to_json,
+        headers: { "Content-Type" => "application/json" }
+      )
+
+    colors = @client.users.get_color(user_ids: [ "11111", "44444" ])
+
+    assert_equal Twitch::Collection, colors.class
+    assert_equal 2, colors.data.count
+  end
 end

@@ -16,7 +16,7 @@ module Twitch
 
     # Required scope: channel:manage:videos
     def delete(video_id:)
-      delete_request("videos?id=#{video_id}")
+      delete_request("videos", params: { id: video_id })
     end
   end
 end

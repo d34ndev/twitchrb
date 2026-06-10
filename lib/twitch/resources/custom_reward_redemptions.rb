@@ -12,8 +12,8 @@ module Twitch
     # Broadcaster ID must match the user in the OAuth token
     def update(broadcaster_id:, reward_id:, redemption_id:, status:)
       attributes = { status: status.upcase }
-      url = "channel_points/custom_rewards/redemptions?broadcaster_id=#{broadcaster_id}&reward_id=#{reward_id}&id=#{redemption_id}&status=#{status.upcase}"
-      response = patch_request(url, body: attributes)
+      query = URI.encode_www_form(broadcaster_id: broadcaster_id, reward_id: reward_id, id: redemption_id, status: status.upcase)
+      response = patch_request("channel_points/custom_rewards/redemptions?#{query}", body: attributes)
 
       CustomRewardRedemption.new(response.body.dig("data")[0]) if response.success?
     end

@@ -11,7 +11,7 @@ module Twitch
 
     # broadcaster_id must match the user in the OAuth token
     def delete(broadcaster_id:)
-      delete_request("raids?broadcaster_id=#{broadcaster_id}")
+      delete_request("raids", params: { broadcaster_id: broadcaster_id })
     end
   end
 end

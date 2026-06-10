@@ -11,7 +11,7 @@ module Twitch
     end
 
     def delete(broadcaster_id:, user_id:)
-      delete_request("channels/vips?broadcaster_id=#{broadcaster_id}&user_id=#{user_id}")
+      delete_request("channels/vips", params: { broadcaster_id: broadcaster_id, user_id: user_id })
     end
   end
 end

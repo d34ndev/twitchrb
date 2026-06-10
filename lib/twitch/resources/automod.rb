@@ -22,7 +22,7 @@ module Twitch
     end
 
     def settings(broadcaster_id:, moderator_id:)
-      response = get_request("moderation/automod/settings?broadcaster_id=#{broadcaster_id}&moderator_id=#{moderator_id}")
+      response = get_request("moderation/automod/settings", params: { broadcaster_id: broadcaster_id, moderator_id: moderator_id })
       AutomodSetting.new response.body.dig("data")[0]
     end
 

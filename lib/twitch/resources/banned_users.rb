@@ -17,7 +17,7 @@ module Twitch
     # Required scope: moderator:manage:banned_users
     # moderator_id must match the currently authenticated user. Can be either the broadcaster ID or moderator ID
     def delete(broadcaster_id:, moderator_id:, user_id:)
-      delete_request("moderation/bans?broadcaster_id=#{broadcaster_id}&moderator_id=#{moderator_id}&user_id=#{user_id}")
+      delete_request("moderation/bans", params: { broadcaster_id: broadcaster_id, moderator_id: moderator_id, user_id: user_id })
     end
   end
 end
