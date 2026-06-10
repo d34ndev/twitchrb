@@ -57,7 +57,7 @@ module Twitch
     end
 
     def error?(response)
-      [ 400, 401, 403, 404, 409, 429, 500, 501, 503 ].include?(response.status) ||
+      response.status >= 400 ||
         (response.body.is_a?(Hash) && response.body.key?("error"))
     end
 
@@ -70,8 +70,6 @@ module Twitch
       error = Twitch::ErrorFactory.create(response.body, response.status)
       raise error if error
     end
-
-    private
 
     def update_rate_limit(response)
       client.rate_limiter.update(response.headers)

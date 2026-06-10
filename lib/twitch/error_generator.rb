@@ -1,5 +1,6 @@
 module Twitch
   class ErrorGenerator < Error
+    attr_reader :response_body
     attr_reader :http_status_code
     attr_reader :twitch_error_code
     attr_reader :twitch_error_message
@@ -40,10 +41,11 @@ module Twitch
     end
 
     def build_message
-      if twitch_error_code.nil?
-        return "Error #{@http_status_code}: #{error_message}"
+      message = "Error #{@http_status_code}: #{error_message}"
+      if twitch_error_message && twitch_error_message != error_message
+        message += " '#{twitch_error_message}'"
       end
-      "Error #{@http_status_code}: #{error_message} '#{twitch_error_message}'"
+      message
     end
   end
 

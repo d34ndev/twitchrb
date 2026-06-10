@@ -7,20 +7,16 @@ module Twitch
 
     def create(type:, version:, condition:, transport:, **params)
       attributes = { type: type, version: version, condition: condition, transport: transport }.merge(params)
-      response = client.connection.post("eventsub/subscriptions", attributes)
-      update_rate_limit(response)
-
-      if response.status == 409
-        raise Twitch::Errors::EventsubSubscriptionConflictError.new(
-          response.body,
-          response.status,
-          existing_subscription_id: response.body.dig("data", 0, "id")
-        )
-      end
-
-      return raise_error(response) if error?(response)
+      response = post_request("eventsub/subscriptions", body: attributes)
 
       EventsubSubscription.new(response.body.dig("data")[0]) if response.success?
+    rescue Twitch::Errors::ConflictError => error
+      existing_id = error.response_body.dig("data", 0, "id") if error.response_body.is_a?(Hash)
+      raise Twitch::Errors::EventsubSubscriptionConflictError.new(
+        error.response_body,
+        error.http_status_code,
+        existing_subscription_id: existing_id
+      )
     end
 
     def delete(id:)
