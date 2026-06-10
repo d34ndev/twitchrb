@@ -36,6 +36,38 @@ class ResourceTest < Minitest::Test
     assert_equal "BEGIN:VCALENDAR", response.body
   end
 
+  def test_retries_once_after_rate_limit_when_auto_retry_enabled
+    stub_request(:get, "#{HELIX_URL}/users")
+      .to_return(
+        { status: 429, body: "{}", headers: { "Content-Type" => "application/json" } },
+        { status: 200, body: { data: [] }.to_json, headers: { "Content-Type" => "application/json" } }
+      )
+
+    response = @resource.get("users")
+
+    assert_equal 200, response.status
+    assert_requested :get, "#{HELIX_URL}/users", times: 2
+  end
+
+  def test_raises_rate_limit_error_when_auto_retry_disabled
+    client = Twitch::Client.new(client_id: "123", access_token: "abc123", auto_retry_rate_limit: false)
+    resource = TestResource.new(client)
+
+    stub_request(:get, "#{HELIX_URL}/users")
+      .to_return(status: 429, body: "{}", headers: { "Content-Type" => "application/json" })
+
+    assert_raises(Twitch::Errors::RateLimitError) { resource.get("users") }
+    assert_requested :get, "#{HELIX_URL}/users", times: 1
+  end
+
+  def test_raises_rate_limit_error_when_retry_is_also_rate_limited
+    stub_request(:get, "#{HELIX_URL}/users")
+      .to_return(status: 429, body: "{}", headers: { "Content-Type" => "application/json" })
+
+    assert_raises(Twitch::Errors::RateLimitError) { @resource.get("users") }
+    assert_requested :get, "#{HELIX_URL}/users", times: 2
+  end
+
   def test_raises_for_error_status_with_non_json_body
     stub_request(:get, "#{HELIX_URL}/users")
       .to_return(status: 500, body: "<html>Internal Server Error</html>", headers: { "Content-Type" => "text/html" })

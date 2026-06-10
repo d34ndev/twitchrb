@@ -10,27 +10,40 @@ module Twitch
 
     def get_request(url, params: {}, headers: {})
       validate_request_path!(url)
-      handle_response client.connection.get(url, params, headers)
+      execute_request { client.connection.get(url, params, headers) }
     end
 
     def post_request(url, body:, headers: {})
       validate_request_path!(url)
-      handle_response client.connection.post(url, body, headers)
+      execute_request { client.connection.post(url, body, headers) }
     end
 
     def patch_request(url, body:, headers: {})
       validate_request_path!(url)
-      handle_response client.connection.patch(url, body, headers)
+      execute_request { client.connection.patch(url, body, headers) }
     end
 
     def put_request(url, body:, headers: {})
       validate_request_path!(url)
-      handle_response client.connection.put(url, body, headers)
+      execute_request { client.connection.put(url, body, headers) }
     end
 
     def delete_request(url, params: {}, headers: {})
       validate_request_path!(url)
-      handle_response client.connection.delete(url, params, headers)
+      execute_request { client.connection.delete(url, params, headers) }
+    end
+
+    def execute_request
+      response = yield
+
+      # Retry once after a 429, waiting until the rate limit window resets
+      if response.status == 429 && client.auto_retry_rate_limit
+        update_rate_limit(response)
+        client.rate_limiter.wait_if_rate_limited
+        response = yield
+      end
+
+      handle_response(response)
     end
 
     def handle_response(response)
