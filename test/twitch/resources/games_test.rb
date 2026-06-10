@@ -47,6 +47,23 @@ class GamesResourceTest < WebmockTest
     assert games.data.all? { |game| game.is_a?(Twitch::Game) }
   end
 
+  def test_games_retrieve_by_names_with_single_match
+    stub_request(:get, "#{HELIX_URL}/games?name%5B%5D=Fortnite")
+      .to_return(status: 200, body: helix_fixture("get_games"),
+        headers: { "Content-Type" => "application/json" })
+
+    games = @client.games.retrieve(names: [ "Fortnite" ])
+
+    assert_equal Twitch::Collection, games.class
+    assert_equal 1, games.data.count
+  end
+
+  def test_games_retrieve_by_id_with_no_match
+    stub_helix(:get, "games", query: { "id" => "0" }, body: { data: [] }.to_json)
+
+    assert_nil @client.games.retrieve(id: "0")
+  end
+
   def test_games_retrieve_missing_params_raises_error
     assert_raises(RuntimeError) { @client.games.retrieve }
   end

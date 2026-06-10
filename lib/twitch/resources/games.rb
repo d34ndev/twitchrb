@@ -14,12 +14,10 @@ module Twitch
       end
 
       body = response.body.dig("data")
-      if id || name && body.count == 1
-        Game.new body[0]
-      elsif ids || names && body.count > 1
-        Collection.from_response(response, type: Game)
+      if id || name
+        body.empty? ? nil : Game.new(body[0])
       else
-        nil
+        Collection.from_response(response, type: Game)
       end
     end
 

@@ -45,6 +45,23 @@ class UsersResourceTest < WebmockTest
     assert_equal 2, users.data.count
   end
 
+  def test_users_retrieve_by_usernames_with_single_match
+    stub_request(:get, "#{HELIX_URL}/users?login%5B%5D=twitchdev")
+      .to_return(status: 200, body: helix_fixture("get_users"),
+        headers: { "Content-Type" => "application/json" })
+
+    users = @client.users.retrieve(usernames: [ "twitchdev" ])
+
+    assert_equal Twitch::Collection, users.class
+    assert_equal 1, users.data.count
+  end
+
+  def test_users_retrieve_by_id_with_no_match
+    stub_helix(:get, "users", query: { "id" => "0" }, body: { data: [] }.to_json)
+
+    assert_nil @client.users.retrieve(id: 0)
+  end
+
   def test_users_retrieve_raises_without_args
     assert_raises(RuntimeError) { @client.users.retrieve }
   end
