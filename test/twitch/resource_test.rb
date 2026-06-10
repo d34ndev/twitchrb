@@ -26,4 +26,22 @@ class ResourceTest < Minitest::Test
       @resource.get("https://evil.example/steal")
     end
   end
+
+  def test_handles_non_json_response_bodies
+    stub_request(:get, "#{HELIX_URL}/schedule/icalendar")
+      .to_return(status: 200, body: "BEGIN:VCALENDAR", headers: { "Content-Type" => "text/calendar" })
+
+    response = @resource.get("schedule/icalendar")
+
+    assert_equal "BEGIN:VCALENDAR", response.body
+  end
+
+  def test_raises_for_error_status_with_non_json_body
+    stub_request(:get, "#{HELIX_URL}/users")
+      .to_return(status: 500, body: "<html>Internal Server Error</html>", headers: { "Content-Type" => "text/html" })
+
+    assert_raises(Twitch::Errors::InternalError) do
+      @resource.get("users")
+    end
+  end
 end
