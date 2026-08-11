@@ -24,6 +24,6 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = [ "lib" ]
 
-  spec.add_dependency "faraday", ">= 2.14.1", "< 3"
+  spec.add_dependency "faraday", ">= 2.14.3", "< 3"
   spec.add_dependency "ostruct", "~> 0.6.0"
 end
