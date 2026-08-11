@@ -4,7 +4,7 @@ All notable changes to `twitchrb` are documented in this file.
 
 Published release notes were sourced from GitHub releases where available. Older tag-only versions and the current unreleased work were reconstructed from local git history.
 
-## [Unreleased]
+## [1.11.0] - 2026-08-11
 
 ### Fixed
 - Fixed a `NoMethodError` crash when API responses have non-JSON bodies, such as `stream_schedule.icalendar` (which was completely broken) and HTML error pages from proxies.
@@ -17,6 +17,7 @@ Published release notes were sourced from GitHub releases where available. Older
 - `Collection#total` now reports the `total` field from the API for paginated endpoints instead of the page size, and responses without a `data` key return an empty collection instead of raising.
 - Removed a leftover debug `puts` in `users.get_color`.
 - Error messages for unmapped statuses no longer duplicate the Twitch message.
+- Updated the minimum Faraday version to 2.14.3 to fix the uncontrolled recursion denial-of-service vulnerability in `NestedParamsEncoder` (CVE-2026-54297).
 
 ### Changed
 - The `auto_retry_rate_limit` client option (default `true`) now works: requests that hit a 429 wait until the rate limit window resets and retry once. Previously the option was accepted but ignored.
