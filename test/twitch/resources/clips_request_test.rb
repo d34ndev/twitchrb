@@ -51,7 +51,7 @@ class ClipsRequestTest < WebmockTest
 
   def test_clips_downloads_returns_collection
     stub_request(:get,
-      "#{HELIX_URL}/clips/downloads?editor_id=321&broadcaster_id=123&clip_id%5B%5D=clip-1&clip_id%5B%5D=clip-2")
+      "#{HELIX_URL}/clips/downloads?editor_id=321&broadcaster_id=123&clip_id=clip-1&clip_id=clip-2")
       .to_return(
         status: 200,
         body: {

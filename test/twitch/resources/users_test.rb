@@ -24,7 +24,7 @@ class UsersResourceTest < WebmockTest
   end
 
   def test_users_retrieve_by_ids
-    stub_request(:get, "#{HELIX_URL}/users?id%5B%5D=141981764&id%5B%5D=72938118")
+    stub_request(:get, "#{HELIX_URL}/users?id=141981764&id=72938118")
       .to_return(status: 200, body: helix_fixture("get_users_many"),
         headers: { "Content-Type" => "application/json" })
 
@@ -35,7 +35,7 @@ class UsersResourceTest < WebmockTest
   end
 
   def test_users_retrieve_by_usernames
-    stub_request(:get, "#{HELIX_URL}/users?login%5B%5D=twitchdev&login%5B%5D=deanpcmad")
+    stub_request(:get, "#{HELIX_URL}/users?login=twitchdev&login=deanpcmad")
       .to_return(status: 200, body: helix_fixture("get_users_many"),
         headers: { "Content-Type" => "application/json" })
 
@@ -46,7 +46,7 @@ class UsersResourceTest < WebmockTest
   end
 
   def test_users_retrieve_by_usernames_with_single_match
-    stub_request(:get, "#{HELIX_URL}/users?login%5B%5D=twitchdev")
+    stub_request(:get, "#{HELIX_URL}/users?login=twitchdev")
       .to_return(status: 200, body: helix_fixture("get_users"),
         headers: { "Content-Type" => "application/json" })
 

@@ -4,6 +4,12 @@ All notable changes to `twitchrb` are documented in this file.
 
 Published release notes were sourced from GitHub releases where available. Older tag-only versions and the current unreleased work were reconstructed from local git history.
 
+## [Unreleased]
+
+### Fixed
+- Fixed multi-value query params (e.g. `users.retrieve(ids:)`, `games.retrieve(names:)`, `streams.list(user_id: [...])`, `clips.downloads(clip_ids:)`) being sent as `id[]=1&id[]=2`. They are now sent as repeated keys (`id=1&id=2`), which is the format Helix expects.
+- Helix and OAuth requests now have default timeouts (30s read, 10s open) instead of waiting indefinitely. Configure with the `timeout:` and `open_timeout:` options on `Twitch::Client.new` and `Twitch::OAuth.new`.
+
 ## [1.11.0] - 2026-08-11
 
 ### Fixed

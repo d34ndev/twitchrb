@@ -27,7 +27,7 @@ class CustomPowerUpsResourceTest < WebmockTest
   end
 
   def test_custom_power_ups_list_supports_id_filter
-    stub_request(:get, "#{HELIX_URL}/bits/custom_power_ups?broadcaster_id=123&id%5B%5D=power-up-1&id%5B%5D=power-up-2")
+    stub_request(:get, "#{HELIX_URL}/bits/custom_power_ups?broadcaster_id=123&id=power-up-1&id=power-up-2")
       .to_return(
         status: 200,
         body: {

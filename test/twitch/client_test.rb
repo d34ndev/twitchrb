@@ -67,4 +67,28 @@ class ClientTest < Minitest::Test
     client = Twitch::Client.new client_id: "123", access_token: "abc123"
     assert_instance_of Twitch::CustomPowerUpsResource, client.custom_power_ups
   end
+
+  def test_default_timeouts
+    client = Twitch::Client.new client_id: "123", access_token: "abc123"
+    assert_equal Twitch::Client::DEFAULT_TIMEOUT, client.connection.options.timeout
+    assert_equal Twitch::Client::DEFAULT_OPEN_TIMEOUT, client.connection.options.open_timeout
+  end
+
+  def test_custom_timeouts
+    client = Twitch::Client.new client_id: "123", access_token: "abc123", timeout: 5, open_timeout: 2
+    assert_equal 5, client.connection.options.timeout
+    assert_equal 2, client.connection.options.open_timeout
+  end
+
+  def test_array_params_are_encoded_as_repeated_keys
+    client = Twitch::Client.new client_id: "123", access_token: "abc123"
+    url = client.connection.build_url("users", id: [ "1", "2" ]).to_s
+    assert_equal "https://api.twitch.tv/helix/users?id=1&id=2", url
+  end
+
+  def test_request_timeout_raises
+    stub_request(:get, "https://api.twitch.tv/helix/users?id=1").to_timeout
+    client = Twitch::Client.new client_id: "123", access_token: "abc123"
+    assert_raises(Faraday::ConnectionFailed, Faraday::TimeoutError) { client.users.retrieve(id: "1") }
+  end
 end

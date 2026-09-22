@@ -15,7 +15,7 @@ class GamesResourceTest < WebmockTest
   end
 
   def test_games_retrieve_by_ids
-    stub_request(:get, "#{HELIX_URL}/games?id%5B%5D=33214&id%5B%5D=509658")
+    stub_request(:get, "#{HELIX_URL}/games?id=33214&id=509658")
       .to_return(status: 200, body: helix_fixture("get_games_many"),
         headers: { "Content-Type" => "application/json" })
 
@@ -36,7 +36,7 @@ class GamesResourceTest < WebmockTest
   end
 
   def test_games_retrieve_by_names
-    stub_request(:get, "#{HELIX_URL}/games?name%5B%5D=Fortnite&name%5B%5D=Just%20Chatting")
+    stub_request(:get, "#{HELIX_URL}/games?name=Fortnite&name=Just%20Chatting")
       .to_return(status: 200, body: helix_fixture("get_games_many"),
         headers: { "Content-Type" => "application/json" })
 
@@ -48,7 +48,7 @@ class GamesResourceTest < WebmockTest
   end
 
   def test_games_retrieve_by_names_with_single_match
-    stub_request(:get, "#{HELIX_URL}/games?name%5B%5D=Fortnite")
+    stub_request(:get, "#{HELIX_URL}/games?name=Fortnite")
       .to_return(status: 200, body: helix_fixture("get_games"),
         headers: { "Content-Type" => "application/json" })
 

@@ -31,8 +31,7 @@ module Twitch
     def get_color(user_id: nil, user_ids: nil)
       if user_ids
         ids = user_ids.is_a?(Array) ? user_ids : user_ids.split(",")
-        query = URI.encode_www_form(ids.map { |i| [ "user_id", i.to_s.strip ] })
-        response = get_request("chat/color?#{query}")
+        response = get_request("chat/color", params: { user_id: ids.map { |i| i.to_s.strip } })
         Collection.from_response(response, type: UserColor)
       else
         response = get_request("chat/color", params: { user_id: user_id })

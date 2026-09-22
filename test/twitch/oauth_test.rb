@@ -150,4 +150,22 @@ class OAuthTest < WebmockTest
 
     assert_equal false, @oauth.revoke(token: "invalid_token")
   end
+
+  def test_oauth_default_timeouts
+    connection = @oauth.send(:connection)
+    assert_equal Twitch::Client::DEFAULT_TIMEOUT, connection.options.timeout
+    assert_equal Twitch::Client::DEFAULT_OPEN_TIMEOUT, connection.options.open_timeout
+  end
+
+  def test_oauth_custom_timeouts
+    oauth = Twitch::OAuth.new(client_id: "id", client_secret: "secret", timeout: 5, open_timeout: 2)
+    connection = oauth.send(:connection)
+    assert_equal 5, connection.options.timeout
+    assert_equal 2, connection.options.open_timeout
+  end
+
+  def test_oauth_request_timeout_raises
+    stub_request(:post, TOKEN_URL).to_timeout
+    assert_raises(Faraday::ConnectionFailed, Faraday::TimeoutError) { @oauth.create(grant_type: "client_credentials") }
+  end
 end

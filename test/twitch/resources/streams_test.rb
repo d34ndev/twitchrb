@@ -15,7 +15,7 @@ class StreamsResourceTest < WebmockTest
   end
 
   def test_streams_list_by_user_id
-    stub_request(:get, "#{HELIX_URL}/streams?user_id%5B%5D=141981764")
+    stub_request(:get, "#{HELIX_URL}/streams?user_id=141981764")
       .to_return(status: 200, body: helix_fixture("get_streams"),
         headers: { "Content-Type" => "application/json" })
 
@@ -26,7 +26,7 @@ class StreamsResourceTest < WebmockTest
   end
 
   def test_streams_list_by_user_login
-    stub_request(:get, "#{HELIX_URL}/streams?user_login%5B%5D=twitchdev")
+    stub_request(:get, "#{HELIX_URL}/streams?user_login=twitchdev")
       .to_return(status: 200, body: helix_fixture("get_streams"),
         headers: { "Content-Type" => "application/json" })
 
@@ -37,7 +37,7 @@ class StreamsResourceTest < WebmockTest
   end
 
   def test_streams_list_by_game_id
-    stub_request(:get, "#{HELIX_URL}/streams?game_id%5B%5D=33214&first=5")
+    stub_request(:get, "#{HELIX_URL}/streams?game_id=33214&first=5")
       .to_return(status: 200, body: helix_fixture("get_streams"),
         headers: { "Content-Type" => "application/json" })
 
@@ -48,7 +48,7 @@ class StreamsResourceTest < WebmockTest
   end
 
   def test_streams_list_with_language
-    stub_request(:get, "#{HELIX_URL}/streams?language%5B%5D=en&first=3")
+    stub_request(:get, "#{HELIX_URL}/streams?language=en&first=3")
       .to_return(status: 200, body: helix_fixture("get_streams"),
         headers: { "Content-Type" => "application/json" })
 

@@ -26,6 +26,13 @@ An access token is required because the Helix API requires authentication.
 @client = Twitch::Client.new(client_id: "abc123", access_token: "xyz123")
 ```
 
+Requests time out after 30 seconds (10 seconds to open the connection) by default, raising
+`Faraday::TimeoutError` or `Faraday::ConnectionFailed`. Both can be changed on `Twitch::Client` and `Twitch::OAuth`:
+
+```ruby
+@client = Twitch::Client.new(client_id: "abc123", access_token: "xyz123", timeout: 10, open_timeout: 5)
+```
+
 #### User vs. App Access Tokens
 
 Most endpoints accept a **user access token** — issued for a specific Twitch user via the

@@ -1,9 +1,12 @@
 module Twitch
   class Client
     BASE_URL = "https://api.twitch.tv/helix"
+    DEFAULT_TIMEOUT = 30
+    DEFAULT_OPEN_TIMEOUT = 10
 
     attr_reader :client_id, :access_token, :adapter, :rate_limiter
     attr_reader :rate_limit_threshold, :auto_retry_rate_limit, :logger
+    attr_reader :timeout, :open_timeout
 
     def initialize(
       client_id:,
@@ -11,7 +14,9 @@ module Twitch
       adapter: Faraday.default_adapter,
       rate_limit_threshold: 10,
       auto_retry_rate_limit: true,
-      logger: nil
+      logger: nil,
+      timeout: DEFAULT_TIMEOUT,
+      open_timeout: DEFAULT_OPEN_TIMEOUT
     )
       @client_id = client_id
       @access_token = access_token
@@ -19,6 +24,8 @@ module Twitch
       @rate_limit_threshold = rate_limit_threshold
       @auto_retry_rate_limit = auto_retry_rate_limit
       @logger = logger
+      @timeout = timeout
+      @open_timeout = open_timeout
       @rate_limiter = RateLimiter.new(logger: logger)
     end
 
@@ -199,11 +206,16 @@ module Twitch
           "Client-ID": client_id
         }
 
+        # Helix expects repeated keys for multiple values (id=1&id=2), not id[]=1&id[]=2
+        conn.options.params_encoder = Faraday::FlatParamsEncoder
+        conn.options.timeout = timeout
+        conn.options.open_timeout = open_timeout
+
         conn.request :json
 
         conn.response :json, content_type: "application/json"
 
-        conn.adapter adapter, @stubs
+        conn.adapter adapter
       end
     end
   end
