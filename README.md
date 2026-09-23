@@ -33,6 +33,30 @@ Requests time out after 30 seconds (10 seconds to open the connection) by defaul
 @client = Twitch::Client.new(client_id: "abc123", access_token: "xyz123", timeout: 10, open_timeout: 5)
 ```
 
+#### Refreshing User Access Tokens
+
+User access tokens expire after a few hours. Pass the `refresh_token` and your `client_secret` and the client
+will refresh an expired token automatically, then retry the request. Twitch may issue a new refresh token each
+time, so use `on_token_refresh` to store the new tokens:
+
+```ruby
+@client = Twitch::Client.new(
+  client_id: "abc123",
+  client_secret: "your-client-secret", # omit for public clients
+  access_token: user.twitch_access_token,
+  refresh_token: user.twitch_refresh_token,
+  on_token_refresh: ->(token) {
+    user.update!(twitch_access_token: token.access_token, twitch_refresh_token: token.refresh_token)
+  }
+)
+
+# Or refresh manually
+@client.refresh_access_token!
+```
+
+The client refreshes once per expired token, even across threads. If the refresh token itself is invalid (e.g.
+the user disconnected your app), the error from Twitch is raised, e.g. `Twitch::Errors::BadRequestError`.
+
 #### User vs. App Access Tokens
 
 Most endpoints accept a **user access token** — issued for a specific Twitch user via the

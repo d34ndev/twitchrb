@@ -57,7 +57,13 @@ module Twitch
     end
 
     def execute_request
+      access_token = client.access_token
       response = yield
+
+      # Retry once with a refreshed token if the access token has expired
+      if response.status == 401 && client.refresh_after_unauthorized(response, access_token)
+        response = yield
+      end
 
       # Retry once after a 429, waiting until the rate limit window resets
       if response.status == 429 && client.auto_retry_rate_limit
