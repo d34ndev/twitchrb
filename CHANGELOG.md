@@ -7,9 +7,13 @@ Published release notes were sourced from GitHub releases where available. Older
 ## [Unreleased]
 
 ### Changed
+- **Breaking:** `oauth.create`, `oauth.refresh`, and `oauth.device` now raise errors (e.g. `Twitch::Errors::BadRequestError`, with Twitch's message in `twitch_error_message`) instead of returning `false`. `oauth.validate` and `oauth.revoke` still return `false`.
 - The minimum supported Ruby version is now 3.3 (previously declared as 2.3, though the gem already required 3.1+). This matches the versions tested in CI.
 
 ### Added
+- `oauth.exchange_code(code:, redirect_uri:)` for the authorization code grant flow, and `oauth.device_token(device_code:, scopes:)` to finish the device code grant flow. Previously neither flow could be completed.
+- `oauth.create` sends extra keyword arguments (such as `code` and `redirect_uri`) with the request, and `scope`/`scopes` accept arrays.
+- `Twitch::OAuth.new` no longer requires a `client_secret`, for public clients using the device code flow.
 - `ads.schedule` and `ads.snooze` (Get Ad Schedule, Snooze Next Ad).
 - `analytics.extensions` and `analytics.games`.
 - `bits.leaderboard` and `bits.cheermotes`.
@@ -33,6 +37,7 @@ Published release notes were sourced from GitHub releases where available. Older
 ### Fixed
 - Fixed multi-value query params (e.g. `users.retrieve(ids:)`, `games.retrieve(names:)`, `streams.list(user_id: [...])`, `clips.downloads(clip_ids:)`) being sent as `id[]=1&id[]=2`. They are now sent as repeated keys (`id=1&id=2`), which is the format Helix expects.
 - Fixed write endpoints sending query string parameters in the JSON body instead of the query string, contrary to the Twitch API reference. Affects `channels.update`, `custom_rewards.create`/`update`, `automod.check_status`/`check_status_multiple`/`update_settings`, `banned_users.create`, `blocked_terms.create`, `unban_requests.resolve`, `moderators.create`, `vips.create`, `raids.create`, `whispers.create`, `stream_schedule.update`/`create_segment`/`update_segment`, `users.update`, and `users.block_user` (whose `source_context` and `reason` options were being sent in the body).
+- Fixed `oauth.device` sending `scope` instead of `scopes`, which Twitch requires.
 - Fixed `to_h` and `to_json` on response objects leaving nested objects as `OpenStruct`s, which serialized as strings like `"#<OpenStruct ...>"`. Nested objects and arrays are now converted to plain hashes, and `as_json` is defined for Rails.
 - `Collection#cursor` now works for endpoints that return `pagination` as a bare string (such as Get Extension Live Channels) instead of raising.
 - `banned_users.create` no longer sends `"duration": null` for permanent bans.

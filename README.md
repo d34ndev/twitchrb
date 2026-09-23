@@ -175,31 +175,57 @@ The `rate_limiter` object has several useful methods:
 
 ### OAuth
 
-This library includes the ability to create, refresh and revoke OAuth tokens.
+This library includes the ability to create, refresh, validate and revoke OAuth tokens.
+
+Failed token requests raise the same errors as API requests (e.g. `Twitch::Errors::BadRequestError`),
+with Twitch's message available as `error.twitch_error_message`.
 
 ```ruby
 # Firstly, set the client details
+# client_secret can be omitted for public clients using the device code flow
 @oauth = Twitch::OAuth.new(client_id: "", client_secret: "")
 
-# Create a Token
-# grant_type can be either "authorization_code" or "client_credentials"
-# scope is a space-delimited list of scopes. This is optional depending on the grant_type
-@oauth.create(grant_type: "", scope: "")
+# Create an app access token (client credentials grant flow)
+@oauth.create(grant_type: "client_credentials")
+
+# Exchange the code from the authorization code grant flow for a user access token
+# https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#authorization-code-grant-flow
+token = @oauth.exchange_code(code: params[:code], redirect_uri: "http://localhost:3000/callback")
+token.access_token
+token.refresh_token
 
 # Refresh a Token
 @oauth.refresh(refresh_token: "")
-
-# Device Code Grant Flow
-# scopes is required and is a space-delimited list of scopes
-# https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#device-code-grant-flow
-@oauth.device(scopes: "bits:read channel:read:subscriptions")
 
 # Validate an Access Token
 # Returns false if the token is invalid
 @oauth.validate(token: "")
 
 # Revoke a Token
+# Returns false if the token couldn't be revoked
 @oauth.revoke(token: "")
+```
+
+#### Device Code Grant Flow
+
+For apps with limited input, such as CLIs, set-top boxes or games.
+See [the Twitch docs](https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#device-code-grant-flow).
+
+```ruby
+# scopes can be an array or a space-delimited string
+scopes = ["user:read:email", "chat:read"]
+device = @oauth.device(scopes: scopes)
+
+puts "Go to #{device.verification_uri} and enter #{device.user_code}"
+
+# Poll until the user has authorized the app
+token = begin
+  sleep device.interval
+  @oauth.device_token(device_code: device.device_code, scopes: scopes)
+rescue Twitch::Errors::BadRequestError => e
+  retry if e.twitch_error_message == "authorization_pending"
+  raise
+end
 ```
 
 ### Users
