@@ -494,14 +494,6 @@ shards = [
 @client.eventsub_conduits.update_shards(id: "abc123-def456", shards: shards)
 ```
 
-### Banned Events
-
-```ruby
-# Retrieves all ban and un-ban events for a channel
-# Available parameters: user_id
-@client.banned_events.list(broadcaster_id: 123)
-```
-
 ### Banned Users
 
 ```ruby
@@ -976,22 +968,6 @@ outcomes = [
 @client.stream_markers.list(video_id: "video-id")
 ```
 
-### Tags
-
-```ruby
-# Get all stream tags
-@client.tags.list
-
-# Get stream tags for a specific broadcaster
-@client.tags.stream(broadcaster_id: 123)
-
-# Replace stream tags for a broadcaster
-# Required scope: channel:manage:broadcast
-# broadcaster_id must match the currently authenticated user
-tag_ids = ["tag-id-1", "tag-id-2"]
-@client.tags.replace(broadcaster_id: 123, tag_ids: tag_ids)
-```
-
 ### Hype Train Status
 
 ```ruby
@@ -999,15 +975,6 @@ tag_ids = ["tag-id-1", "tag-id-2"]
 # Required scope: channel:read:hype_train
 # broadcaster_id must match the currently authenticated user
 @client.hype_train_status.retrieve(broadcaster_id: 123)
-```
-
-### Moderator Events
-
-```ruby
-# Get moderator events for a broadcaster
-# Required scope: moderation:read
-# broadcaster_id must match the currently authenticated user
-@client.moderator_events.list(broadcaster_id: 123)
 ```
 
 

@@ -9,6 +9,13 @@ Published release notes were sourced from GitHub releases where available. Older
 ### Changed
 - The minimum supported Ruby version is now 3.3 (previously declared as 2.3, though the gem already required 3.1+). This matches the versions tested in CI.
 
+### Removed
+- Removed methods for endpoints Twitch has shut down, which could only return errors:
+  - `banned_events.list` and `moderator_events.list` (Get Banned Events / Get Moderator Events).
+  - `users.follows` and `users.following?` (`GET /users/follows`). Use `channels.followers` or `channels.followed` instead.
+  - `tags.list`, `tags.stream`, and `tags.replace` (the old Twitch-defined stream tags). Channel tags are now read with `channels.retrieve` and set with `channels.update(tags: [...])`.
+- Removed the now-unused `Twitch::BannedEvent`, `Twitch::ModeratorEvent`, `Twitch::FollowedUser`, and `Twitch::Tag` classes.
+
 ### Fixed
 - Fixed multi-value query params (e.g. `users.retrieve(ids:)`, `games.retrieve(names:)`, `streams.list(user_id: [...])`, `clips.downloads(clip_ids:)`) being sent as `id[]=1&id[]=2`. They are now sent as repeated keys (`id=1&id=2`), which is the format Helix expects.
 - Fixed write endpoints sending query string parameters in the JSON body instead of the query string, contrary to the Twitch API reference. Affects `channels.update`, `custom_rewards.create`/`update`, `automod.check_status`/`check_status_multiple`/`update_settings`, `banned_users.create`, `blocked_terms.create`, `unban_requests.resolve`, `moderators.create`, `vips.create`, `raids.create`, `whispers.create`, `stream_schedule.update`/`create_segment`/`update_segment`, `users.update`, and `users.block_user` (whose `source_context` and `reason` options were being sent in the body).

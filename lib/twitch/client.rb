@@ -65,20 +65,12 @@ module Twitch
       EventsubConduitsResource.new(self)
     end
 
-    def banned_events
-      BannedEventsResource.new(self)
-    end
-
     def banned_users
       BannedUsersResource.new(self)
     end
 
     def moderators
       ModeratorsResource.new(self)
-    end
-
-    def moderator_events
-      ModeratorEventsResource.new(self)
     end
 
     def polls
@@ -107,10 +99,6 @@ module Twitch
 
     def subscriptions
       SubscriptionsResource.new(self)
-    end
-
-    def tags
-      TagsResource.new(self)
     end
 
     def custom_rewards
