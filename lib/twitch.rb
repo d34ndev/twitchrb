@@ -18,6 +18,7 @@ module Twitch
   autoload :Object, "twitch/object"
 
   autoload :OAuth, "twitch/oauth"
+  autoload :EventsubWebhook, "twitch/eventsub_webhook"
 
 
   autoload :UsersResource, "twitch/resources/users"

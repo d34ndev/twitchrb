@@ -11,6 +11,7 @@ Published release notes were sourced from GitHub releases where available. Older
 - The minimum supported Ruby version is now 3.3 (previously declared as 2.3, though the gem already required 3.1+). This matches the versions tested in CI.
 
 ### Added
+- `Twitch::EventsubWebhook` to verify and parse EventSub webhook requests. It checks the HMAC signature in constant time, rejects messages older than 10 minutes, and gives access to the message type, challenge, subscription, and event.
 - `oauth.exchange_code(code:, redirect_uri:)` for the authorization code grant flow, and `oauth.device_token(device_code:, scopes:)` to finish the device code grant flow. Previously neither flow could be completed.
 - `oauth.create` sends extra keyword arguments (such as `code` and `redirect_uri`) with the request, and `scope`/`scopes` accept arrays.
 - `Twitch::OAuth.new` no longer requires a `client_secret`, for public clients using the device code flow.

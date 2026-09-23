@@ -483,6 +483,54 @@ end
 @client.eventsub_subscriptions.delete(id: "abc12-abc12-abc12")
 ```
 
+### EventSub Webhooks
+
+When Twitch sends EventSub notifications to your webhook callback, you must verify each request came from Twitch
+before trusting it. `Twitch::EventsubWebhook` checks the HMAC signature using the `secret` you passed when creating
+the subscription, and rejects messages older than 10 minutes to guard against replay attacks.
+
+Pass the **raw** request body, as the signature covers the exact bytes Twitch sent. `headers` can be a Hash,
+a Rack env, or Rails' `request.headers`.
+
+```ruby
+# Rails example
+class TwitchWebhooksController < ApplicationController
+  skip_forgery_protection
+
+  def create
+    webhook = Twitch::EventsubWebhook.new(
+      secret: ENV["TWITCH_EVENTSUB_SECRET"],
+      headers: request.headers,
+      body: request.raw_post
+    )
+
+    return head :forbidden unless webhook.valid?
+
+    if webhook.verification?
+      # Twitch confirms you own the callback when you create a subscription
+      render plain: webhook.challenge
+    elsif webhook.notification?
+      # Twitch may send a message more than once, so skip message IDs you've already processed
+      # webhook.subscription_type  #=> "channel.follow"
+      # webhook.event              #=> #<Twitch::Object user_id="1234", user_login="cool_user", ...>
+      head :no_content
+    elsif webhook.revocation?
+      # webhook.subscription.status  #=> "authorization_revoked"
+      head :no_content
+    end
+  end
+end
+
+# Or just check the signature and timestamp
+Twitch::EventsubWebhook.verify(secret: "...", headers: request.headers, body: request.raw_post)
+
+# Allow a different maximum message age, in seconds (default 600)
+Twitch::EventsubWebhook.new(secret: "...", headers: request.headers, body: request.raw_post, max_age: 300)
+```
+
+Other readers: `message_id`, `message_type`, `timestamp`, `retry?`, `subscription_version`, `payload` (the parsed body),
+`signature_valid?`, and `expired?`.
+
 ### Custom Power-ups
 
 ```ruby
