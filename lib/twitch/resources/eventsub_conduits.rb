@@ -1,5 +1,7 @@
 module Twitch
   class EventsubConduitsResource < Resource
+    MAX_SHARDS_PER_UPDATE = 100
+
     def list(**params)
       response = get_request("eventsub/conduits", params: params)
       collection(response, type: EventsubConduit)
@@ -26,9 +28,17 @@ module Twitch
       collection(response, type: EventsubConduitShard)
     end
 
+    # Twitch accepts up to 100 shards per request, so larger lists are sent in batches.
+    # Returns the updated shards. Shards that failed to update are listed in #errors
+    # (each with id, message and code), as Twitch applies the rest of the update anyway.
     def update_shards(id:, shards:)
-      response = patch_request("eventsub/conduits/shards", body: { conduit_id: id, shards: shards })
-      collection(response, type: EventsubConduitShard)
+      results = shards.each_slice(MAX_SHARDS_PER_UPDATE).map do |batch|
+        response = patch_request("eventsub/conduits/shards", body: { conduit_id: id, shards: batch })
+        collection(response, type: EventsubConduitShard)
+      end
+
+      data = results.flat_map(&:data)
+      Collection.new(data: data, total: data.size, cursor: nil, errors: results.flat_map(&:errors))
     end
   end
 end

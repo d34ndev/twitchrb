@@ -114,7 +114,100 @@ class EventsubConduitsResourceTest < WebmockTest
     assert_raises(Twitch::Errors::AuthenticationMissingError) { @client.eventsub_conduits.delete(id: "fake-id") }
   end
 
+  def test_update_shards_sends_a_single_request_for_up_to_100_shards
+    shards = (0...100).map { |i| shard(i) }
+    stub = stub_request(:patch, "#{HELIX_URL}/eventsub/conduits/shards")
+      .with(body: { conduit_id: "conduit-1", shards: shards }.to_json)
+      .to_return(status: 202, body: shard_response(0...100), headers: json_headers)
+
+    result = @app_client.eventsub_conduits.update_shards(id: "conduit-1", shards: shards)
+
+    assert_requested stub, times: 1
+    assert_equal 100, result.data.size
+    assert_instance_of Twitch::EventsubConduitShard, result.first
+    assert_empty result.errors
+  end
+
+  def test_update_shards_batches_more_than_100_shards
+    batch_sizes = []
+    stub_request(:patch, "#{HELIX_URL}/eventsub/conduits/shards").to_return do |request|
+      body = JSON.parse(request.body)
+      assert_equal "conduit-1", body["conduit_id"]
+      batch_sizes << body["shards"].size
+      { status: 202, body: shard_response(body["shards"].map { |s| s["id"] }), headers: json_headers }
+    end
+
+    result = @app_client.eventsub_conduits.update_shards(id: "conduit-1", shards: (0...250).map { |i| shard(i) })
+
+    assert_equal [ 100, 100, 50 ], batch_sizes
+    assert_equal 250, result.data.size
+    assert_equal 250, result.total
+    assert_equal (0...250).map(&:to_s), result.map(&:id)
+  end
+
+  def test_update_shards_exposes_failed_shards
+    errors = [ { id: "5", message: "The shard id is outside of the conduit's range.", code: "invalid_parameter" } ]
+    stub_request(:patch, "#{HELIX_URL}/eventsub/conduits/shards")
+      .to_return(status: 202, body: shard_response([ 0 ], errors: errors), headers: json_headers)
+
+    result = @app_client.eventsub_conduits.update_shards(id: "conduit-1", shards: [ shard(0), shard(5) ])
+
+    assert_equal [ "0" ], result.map(&:id)
+    assert_equal 1, result.errors.size
+    assert_equal "5", result.errors.first.id
+    assert_equal "invalid_parameter", result.errors.first.code
+  end
+
+  def test_update_shards_merges_errors_across_batches
+    stub_request(:patch, "#{HELIX_URL}/eventsub/conduits/shards").to_return do |request|
+      ids = JSON.parse(request.body)["shards"].map { |s| s["id"] }
+      failed = ids.last
+      {
+        status: 202,
+        body: shard_response(ids - [ failed ], errors: [ { id: failed, message: "failed", code: "invalid_parameter" } ]),
+        headers: json_headers
+      }
+    end
+
+    result = @app_client.eventsub_conduits.update_shards(id: "conduit-1", shards: (0...150).map { |i| shard(i) })
+
+    assert_equal 148, result.data.size
+    assert_equal [ "99", "149" ], result.errors.map(&:id)
+  end
+
+  def test_update_shards_with_no_shards_sends_nothing
+    result = @app_client.eventsub_conduits.update_shards(id: "conduit-1", shards: [])
+
+    assert_empty result.data
+    assert_not_requested :patch, "#{HELIX_URL}/eventsub/conduits/shards"
+  end
+
+  def test_update_shards_raises_when_a_batch_fails
+    calls = 0
+    stub_request(:patch, "#{HELIX_URL}/eventsub/conduits/shards").to_return do |request|
+      calls += 1
+      if calls == 1
+        { status: 202, body: shard_response(JSON.parse(request.body)["shards"].map { |s| s["id"] }), headers: json_headers }
+      else
+        { status: 400, body: { error: "Bad Request", status: 400, message: "Invalid conduit" }.to_json, headers: json_headers }
+      end
+    end
+
+    assert_raises(Twitch::Errors::BadRequestError) do
+      @app_client.eventsub_conduits.update_shards(id: "conduit-1", shards: (0...150).map { |i| shard(i) })
+    end
+    assert_equal 2, calls
+  end
+
   private
+
+  def shard(id)
+    { id: id.to_s, transport: { method: "webhook", callback: "https://example.com/webhook", secret: "a-secret-value" } }
+  end
+
+  def shard_response(ids, errors: [])
+    { data: ids.map { |id| { id: id.to_s, status: "webhook_callback_verification_pending", transport: { method: "webhook" } } }, errors: errors }.to_json
+  end
 
   def json_headers
     { "Content-Type" => "application/json" }
@@ -123,4 +216,5 @@ class EventsubConduitsResourceTest < WebmockTest
   def unauthorized_body
     { error: "Unauthorized", status: 401, message: "OAuth token is missing" }.to_json
   end
+
 end

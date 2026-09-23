@@ -629,7 +629,13 @@ shards = [
     }
   }
 ]
-@client.eventsub_conduits.update_shards(id: "abc123-def456", shards: shards)
+result = @client.eventsub_conduits.update_shards(id: "abc123-def456", shards: shards)
+
+# Twitch accepts up to 100 shards per request, so larger lists are sent in batches automatically.
+# Twitch applies the valid shards even if others fail, so check errors for any that didn't update:
+result.errors.each do |error|
+  puts "Shard #{error.id} failed: #{error.message} (#{error.code})"
+end
 ```
 
 ### Banned Users

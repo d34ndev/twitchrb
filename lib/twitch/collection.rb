@@ -2,7 +2,7 @@ module Twitch
   class Collection
     include Enumerable
 
-    attr_reader :data, :total, :cursor
+    attr_reader :data, :total, :cursor, :errors
 
     def self.from_response(response, type:, next_page: nil)
       body = response.body
@@ -12,7 +12,8 @@ module Twitch
         data: data.map { |attrs| type.new(attrs) },
         total: body["total"] || data.count,
         cursor: cursor_from(body["pagination"]),
-        next_page: next_page
+        next_page: next_page,
+        errors: (body["errors"] || []).map { |attrs| Object.new(attrs) }
       )
     end
 
@@ -22,12 +23,14 @@ module Twitch
       pagination.is_a?(Hash) ? pagination["cursor"] : pagination
     end
 
-    # next_page is a callable that takes a cursor and returns the following Collection
-    def initialize(data:, total:, cursor:, next_page: nil)
+    # next_page is a callable that takes a cursor and returns the following Collection.
+    # errors lists items that failed, for endpoints that report partial failures (e.g. Update Conduit Shards).
+    def initialize(data:, total:, cursor:, next_page: nil, errors: [])
       @data = data
       @total = total
       @cursor = cursor
       @next_page = next_page
+      @errors = errors
     end
 
     def each(&block)

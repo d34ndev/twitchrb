@@ -33,4 +33,18 @@ class CollectionTest < Minitest::Test
     assert_equal [], collection.data
     assert_equal 0, collection.total
   end
+
+  def test_from_response_reads_errors
+    response = FakeResponse.new({ "data" => [], "errors" => [ { "id" => "1", "message" => "failed" } ] })
+
+    collection = Twitch::Collection.from_response(response, type: Twitch::Object)
+
+    assert_equal "failed", collection.errors.first.message
+  end
+
+  def test_errors_default_to_empty
+    assert_equal [], Twitch::Collection.from_response(FakeResponse.new({ "data" => [] }), type: Twitch::Object).errors
+    assert_equal [], Twitch::Collection.new(data: [], total: 0, cursor: nil).errors
+  end
+
 end
