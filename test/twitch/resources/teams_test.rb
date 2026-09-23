@@ -28,7 +28,7 @@ class TeamsResourceTest < WebmockTest
   end
 
   def test_teams_retrieve_raises_without_args
-    assert_raises(RuntimeError) { @client.teams.retrieve }
+    assert_raises(ArgumentError) { @client.teams.retrieve }
   end
 
   def test_teams_channel

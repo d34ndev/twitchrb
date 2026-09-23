@@ -7,6 +7,7 @@ Published release notes were sourced from GitHub releases where available. Older
 ## [Unreleased]
 
 ### Changed
+- Missing required arguments (e.g. calling `clips.list` without `broadcaster_id`, `game_id` or `id`) now raise `ArgumentError` instead of `RuntimeError`.
 - **Breaking:** `oauth.create`, `oauth.refresh`, and `oauth.device` now raise errors (e.g. `Twitch::Errors::BadRequestError`, with Twitch's message in `twitch_error_message`) instead of returning `false`. `oauth.validate` and `oauth.revoke` still return `false`.
 - The minimum supported Ruby version is now 3.3 (previously declared as 2.3, though the gem already required 3.1+). This matches the versions tested in CI.
 
@@ -40,6 +41,7 @@ Published release notes were sourced from GitHub releases where available. Older
 ### Fixed
 - Fixed multi-value query params (e.g. `users.retrieve(ids:)`, `games.retrieve(names:)`, `streams.list(user_id: [...])`, `clips.downloads(clip_ids:)`) being sent as `id[]=1&id[]=2`. They are now sent as repeated keys (`id=1&id=2`), which is the format Helix expects.
 - Fixed write endpoints sending query string parameters in the JSON body instead of the query string, contrary to the Twitch API reference. Affects `channels.update`, `custom_rewards.create`/`update`, `automod.check_status`/`check_status_multiple`/`update_settings`, `banned_users.create`, `blocked_terms.create`, `unban_requests.resolve`, `moderators.create`, `vips.create`, `raids.create`, `whispers.create`, `stream_schedule.update`/`create_segment`/`update_segment`, `users.update`, and `users.block_user` (whose `source_context` and `reason` options were being sent in the body).
+- Fixed `clips.list` and `videos.list` rejecting calls that only pass `id`, which both endpoints accept.
 - Fixed `eventsub_conduits.update_shards` discarding the `errors` Twitch returns for shards that failed to update. They are now available as `result.errors`, and `Collection#errors` is available for any endpoint that reports partial failures.
 - `eventsub_conduits.update_shards` now sends lists of more than 100 shards in batches of 100, the most Twitch accepts per request.
 - Fixed `oauth.device` sending `scope` instead of `scopes`, which Twitch requires.

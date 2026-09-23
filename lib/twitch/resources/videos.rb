@@ -1,7 +1,7 @@
 module Twitch
   class VideosResource < Resource
     def list(**params)
-      raise "user_id or game_id is required" unless !params[:user_id].nil? || !params[:game_id].nil?
+      raise ArgumentError, "user_id, game_id or id is required" if params.values_at(:user_id, :game_id, :id).all?(&:nil?)
 
       response = get_request("videos", params: params)
       collection(response, type: Video)

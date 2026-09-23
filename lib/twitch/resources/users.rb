@@ -1,7 +1,7 @@
 module Twitch
   class UsersResource < Resource
     def retrieve(id: nil, ids: nil, username: nil, usernames: nil)
-      raise "Either id, ids, username or usernames is required" unless !id.nil? || !ids.nil? || !username.nil? || !usernames.nil?
+      raise ArgumentError, "Either id, ids, username or usernames is required" unless !id.nil? || !ids.nil? || !username.nil? || !usernames.nil?
 
       if id
         response = get_request("users", params: { id: id })
@@ -89,7 +89,7 @@ module Twitch
     end
 
     def authorization(id: nil, ids: nil)
-      raise "Either id or ids is required" unless !id.nil? || !ids.nil?
+      raise ArgumentError, "Either id or ids is required" unless !id.nil? || !ids.nil?
 
       if id
         response = get_request("authorization/users", params: { user_id: id })

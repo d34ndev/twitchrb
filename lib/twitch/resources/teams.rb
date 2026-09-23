@@ -1,7 +1,7 @@
 module Twitch
   class TeamsResource < Resource
     def retrieve(id: nil, name: nil)
-      raise "Either id or name is required" if id.nil? && name.nil?
+      raise ArgumentError, "Either id or name is required" if id.nil? && name.nil?
 
       response = get_request("teams", params: { id: id, name: name }.compact)
       data = response.body.dig("data")

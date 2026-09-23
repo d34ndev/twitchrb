@@ -63,7 +63,11 @@ class UsersResourceTest < WebmockTest
   end
 
   def test_users_retrieve_raises_without_args
-    assert_raises(RuntimeError) { @client.users.retrieve }
+    assert_raises(ArgumentError) { @client.users.retrieve }
+  end
+
+  def test_users_authorization_raises_without_args
+    assert_raises(ArgumentError) { @client.users.authorization }
   end
 
   def test_users_update_color_escapes_hex_colors

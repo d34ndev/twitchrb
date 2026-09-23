@@ -50,7 +50,16 @@ class ClipsResourceTest < WebmockTest
   end
 
   def test_clips_list_missing_params_raises_error
-    assert_raises(RuntimeError) { @client.clips.list(first: 5) }
+    assert_raises(ArgumentError) { @client.clips.list(first: 5) }
+  end
+
+  def test_clips_list_by_ids
+    stub_request(:get, "#{HELIX_URL}/clips?id=clip-1&id=clip-2")
+      .to_return(status: 200, body: { data: [ { id: "clip-1" }, { id: "clip-2" } ] }.to_json, headers: { "Content-Type" => "application/json" })
+
+    clips = @client.clips.list(id: [ "clip-1", "clip-2" ])
+
+    assert_equal %w[clip-1 clip-2], clips.map(&:id)
   end
 
   def test_clips_retrieve

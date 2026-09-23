@@ -65,7 +65,7 @@ class GamesResourceTest < WebmockTest
   end
 
   def test_games_retrieve_missing_params_raises_error
-    assert_raises(RuntimeError) { @client.games.retrieve }
+    assert_raises(ArgumentError) { @client.games.retrieve }
   end
 
   def test_games_top

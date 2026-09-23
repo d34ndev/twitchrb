@@ -1,7 +1,7 @@
 module Twitch
   class GamesResource < Resource
     def retrieve(id: nil, ids: nil, name: nil, names: nil)
-      raise "Either id, ids, name or names is required" unless !id.nil? || !ids.nil? || !name.nil? || !names.nil?
+      raise ArgumentError, "Either id, ids, name or names is required" unless !id.nil? || !ids.nil? || !name.nil? || !names.nil?
 
       if id
         response = get_request("games", params: { id: id })

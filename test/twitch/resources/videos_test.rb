@@ -72,7 +72,16 @@ class VideosResourceTest < WebmockTest
   end
 
   def test_videos_list_missing_params_raises_error
-    assert_raises(RuntimeError) { @client.videos.list(first: 5) }
+    assert_raises(ArgumentError) { @client.videos.list(first: 5) }
+  end
+
+  def test_videos_list_by_ids
+    stub_request(:get, "#{HELIX_URL}/videos?id=1&id=2")
+      .to_return(status: 200, body: { data: [ { id: "1" }, { id: "2" } ] }.to_json, headers: { "Content-Type" => "application/json" })
+
+    videos = @client.videos.list(id: [ "1", "2" ])
+
+    assert_equal %w[1 2], videos.map(&:id)
   end
 
   def test_videos_retrieve
