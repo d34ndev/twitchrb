@@ -1048,7 +1048,11 @@ outcomes = [
 # Check if a user is subscribed to a broadcaster
 # Required scope: user:read:subscriptions
 # user_id must match the currently authenticated user
+# Returns a collection with the subscription, or raises Twitch::Errors::EntityNotFoundError if not subscribed
 @client.subscriptions.is_subscribed(broadcaster_id: 123, user_id: 456)
+
+# Or get true/false
+@client.subscriptions.subscribed?(broadcaster_id: 123, user_id: 456)
 
 # Get subscription counts and points for a broadcaster
 # Required scope: channel:read:subscriptions

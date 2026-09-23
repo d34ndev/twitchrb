@@ -12,6 +12,7 @@ Published release notes were sourced from GitHub releases where available. Older
 - The minimum supported Ruby version is now 3.3 (previously declared as 2.3, though the gem already required 3.1+). This matches the versions tested in CI.
 
 ### Added
+- `subscriptions.subscribed?(broadcaster_id:, user_id:)`, which returns `true` or `false` instead of raising when the user isn't subscribed.
 - Automatic token refresh: pass `refresh_token:` (and `client_secret:`, unless your app is a public client) to `Twitch::Client.new`, and requests that fail because the access token expired are retried once with a refreshed token. `on_token_refresh:` is called with the new token so you can store it, and `client.refresh_access_token!` refreshes manually.
 - Automatic pagination: collections from paginated endpoints now have `next_page?`, `next_page`, `each_page`, and `auto_paginate`, which lazily iterates over every item across pages (e.g. `auto_paginate.first(250)` only fetches the pages it needs).
 - `Twitch::EventsubWebhook` to verify and parse EventSub webhook requests. It checks the HMAC signature in constant time, rejects messages older than 10 minutes, and gives access to the message type, challenge, subscription, and event.

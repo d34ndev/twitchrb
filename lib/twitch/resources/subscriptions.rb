@@ -18,6 +18,17 @@ module Twitch
       collection(response, type: Subscription)
     end
 
+    # Returns true if the user subscribes to the broadcaster, false if not
+    # User ID must match the user in the OAuth token
+    # Required scope: user:read:subscriptions
+    def subscribed?(broadcaster_id:, user_id:)
+      get_request("subscriptions/user", params: { broadcaster_id: broadcaster_id, user_id: user_id })
+      true
+    rescue Errors::EntityNotFoundError
+      # Twitch responds with 404 when the user doesn't subscribe
+      false
+    end
+
     # Grabs the number of Subscribers and Subscriber Points a broadcaster has
     # Broadcaster ID must match the user in the OAuth token
     # Required scope: channel:read:subscriptions
