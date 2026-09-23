@@ -4,7 +4,39 @@ All notable changes to `twitchrb` are documented in this file.
 
 Published release notes were sourced from GitHub releases where available. Older tag-only versions and the current unreleased work were reconstructed from local git history.
 
-## [Unreleased]
+## [2.0.0] - 2026-09-23
+
+This release adds every remaining Helix endpoint, automatic pagination, automatic token refresh, and EventSub
+webhook verification, and fixes many requests that didn't match the Twitch API reference. It contains breaking
+changes, listed below.
+
+### Upgrading from 1.x
+
+- **Ruby 3.3 or newer is required.**
+- **Methods for endpoints Twitch has shut down were removed:**
+  - `hype_train_events.list` → use `hype_train_status.retrieve(broadcaster_id:)`.
+  - `users.follows` and `users.following?` → use `channels.followers(broadcaster_id:, user_id:)` to check whether a
+    user follows a channel, or `channels.followed(user_id:)` to list the channels a user follows.
+  - `tags.list`, `tags.stream`, and `tags.replace` → channel tags are returned by `channels.retrieve` and set with
+    `channels.update(broadcaster_id:, tags: [...])`.
+  - `banned_events.list` and `moderator_events.list` → no API replacement; use the `channel.ban`, `channel.unban`,
+    and `channel.moderate` EventSub subscriptions.
+- **`oauth.create`, `oauth.refresh`, and `oauth.device` raise errors instead of returning `false`.** Replace checks
+  like `if token = oauth.refresh(...)` with a `rescue`:
+
+  ```ruby
+  begin
+    token = oauth.refresh(refresh_token: refresh_token)
+  rescue Twitch::Error => e
+    e.twitch_error_message #=> "Invalid refresh token"
+  end
+  ```
+
+  `oauth.validate` and `oauth.revoke` still return `false`.
+- **Missing required arguments raise `ArgumentError`** instead of `RuntimeError`. Update any `rescue RuntimeError`.
+- **`to_h` on response objects now converts nested objects to hashes too.** If you called methods on nested values
+  from `to_h` (e.g. `object.to_h[:current].id`), use hash access instead (`object.to_h[:current][:id]`), or call the
+  method on the object itself (`object.current.id`).
 
 ### Changed
 - Missing required arguments (e.g. calling `clips.list` without `broadcaster_id`, `game_id` or `id`) now raise `ArgumentError` instead of `RuntimeError`.
@@ -34,10 +66,11 @@ Published release notes were sourced from GitHub releases where available. Older
 
 ### Removed
 - Removed methods for endpoints Twitch has shut down, which could only return errors:
+  - `hype_train_events.list`, which forwarded to `hype_train_status.retrieve` with a deprecation warning since 1.10.0.
   - `banned_events.list` and `moderator_events.list` (Get Banned Events / Get Moderator Events).
   - `users.follows` and `users.following?` (`GET /users/follows`). Use `channels.followers` or `channels.followed` instead.
   - `tags.list`, `tags.stream`, and `tags.replace` (the old Twitch-defined stream tags). Channel tags are now read with `channels.retrieve` and set with `channels.update(tags: [...])`.
-- Removed the now-unused `Twitch::BannedEvent`, `Twitch::ModeratorEvent`, `Twitch::FollowedUser`, and `Twitch::Tag` classes.
+- Removed the now-unused `Twitch::BannedEvent`, `Twitch::ModeratorEvent`, `Twitch::FollowedUser`, `Twitch::HypeTrainEvent`, and `Twitch::Tag` classes.
 
 ### Fixed
 - Fixed multi-value query params (e.g. `users.retrieve(ids:)`, `games.retrieve(names:)`, `streams.list(user_id: [...])`, `clips.downloads(clip_ids:)`) being sent as `id[]=1&id[]=2`. They are now sent as repeated keys (`id=1&id=2`), which is the format Helix expects.

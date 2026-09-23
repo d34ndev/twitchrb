@@ -36,22 +36,4 @@ class HypeTrainStatusResourceTest < WebmockTest
 
     assert_nil @client.hype_train_status.retrieve(broadcaster_id: "123")
   end
-
-  def test_hype_train_events_list_warns_and_proxies_to_status
-    stub_request(:get, "#{HELIX_URL}/hypetrain/status")
-      .with(query: { "broadcaster_id" => "123" })
-      .to_return(
-        status: 200,
-        body: { data: [ { current: { id: "train-1" } } ] }.to_json,
-        headers: { "Content-Type" => "application/json" }
-      )
-
-    warning = capture_io do
-      status = @client.hype_train_events.list(broadcaster_id: "123")
-      assert_instance_of Twitch::HypeTrainStatus, status
-      assert_equal "train-1", status.current.id
-    end.last
-
-    assert_includes warning, "`hype_train_events.list` is deprecated"
-  end
 end

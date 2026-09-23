@@ -128,10 +128,6 @@ module Twitch
       GoalsResource.new(self)
     end
 
-    def hype_train_events
-      HypeTrainEventsResource.new(self)
-    end
-
     def hype_train_status
       HypeTrainStatusResource.new(self)
     end

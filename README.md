@@ -14,6 +14,8 @@ Add this line to your application's Gemfile:
 gem "twitchrb"
 ```
 
+Upgrading from 1.x? Version 2.0 has breaking changes. See [Upgrading from 1.x](CHANGELOG.md#upgrading-from-1x) in the changelog.
+
 ## Usage
 
 ### Set Client Details
