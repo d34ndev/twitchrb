@@ -8,7 +8,7 @@ module Twitch
 
     def resolve(broadcaster_id:, moderator_id:, id:, status:, **params)
       attrs = { broadcaster_id: broadcaster_id, moderator_id: moderator_id, unban_request_id: id, status: status }
-      response = patch_request("moderation/unban_requests", body: attrs.merge(params))
+      response = patch_request(query_path("moderation/unban_requests", attrs.merge(params)), body: {})
       UnbanRequest.new(response.body.dig("data")[0])
     end
   end

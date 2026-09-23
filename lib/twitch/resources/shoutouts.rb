@@ -5,7 +5,7 @@ module Twitch
     # To: the ID of the Broadcaster the Shoutout will be for
     # Required scope: moderator:manage:shoutouts
     def create(from:, to:, moderator_id:)
-      post_request("chat/shoutouts?#{URI.encode_www_form(from_broadcaster_id: from, to_broadcaster_id: to, moderator_id: moderator_id)}", body: nil)
+      post_request(query_path("chat/shoutouts", from_broadcaster_id: from, to_broadcaster_id: to, moderator_id: moderator_id), body: nil)
     end
   end
 end

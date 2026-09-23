@@ -37,7 +37,7 @@ module Twitch
 
     # Requires scope: channel:manage:broadcast
     def update(broadcaster_id:, **attributes)
-      patch_request("channels", body: attributes.merge(broadcaster_id: broadcaster_id))
+      patch_request(query_path("channels", broadcaster_id: broadcaster_id), body: attributes)
     end
 
     # Requires scope: channel:read:editors

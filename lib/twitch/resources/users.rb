@@ -24,7 +24,7 @@ module Twitch
     # Updates the current users description
     # Required scope: user:edit
     def update(description:)
-      response = put_request("users", body: { description: description })
+      response = put_request(query_path("users", description: description), body: {})
       User.new response.body.dig("data")[0]
     end
 
@@ -43,7 +43,7 @@ module Twitch
     # Required scope: user:manage:chat_color
     # user_id must be the currently authenticated user
     def update_color(user_id:, color:)
-      put_request("chat/color?#{URI.encode_www_form(user_id: user_id, color: color)}", body: {})
+      put_request(query_path("chat/color", user_id: user_id, color: color), body: {})
     end
 
     # Deprecated.
@@ -64,7 +64,7 @@ module Twitch
 
     # Required scope: user:manage:blocked_users
     def block_user(target_user_id:, **attributes)
-      put_request("users/blocks?#{URI.encode_www_form(target_user_id: target_user_id)}", body: attributes)
+      put_request(query_path("users/blocks", attributes.merge(target_user_id: target_user_id)), body: {})
     end
 
     # Required scope: user:manage:blocked_users

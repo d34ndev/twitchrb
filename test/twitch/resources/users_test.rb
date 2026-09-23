@@ -92,4 +92,24 @@ class UsersResourceTest < WebmockTest
     assert_equal Twitch::Collection, colors.class
     assert_equal 2, colors.data.count
   end
+
+  def test_users_update_sends_description_in_query
+    stub_helix(:put, "users",
+      query: { "description" => "Just a streamer" },
+      request_body: {},
+      fixture: "get_users")
+
+    user = @client.users.update(description: "Just a streamer")
+
+    assert_instance_of Twitch::User, user
+  end
+
+  def test_users_block_user_sends_everything_in_query
+    stub_helix(:put, "users/blocks",
+      query: { "target_user_id" => "9876", "source_context" => "chat", "reason" => "spam" },
+      request_body: {},
+      status: 204, body: "")
+
+    assert_equal true, @client.users.block_user(target_user_id: "9876", source_context: "chat", reason: "spam")
+  end
 end

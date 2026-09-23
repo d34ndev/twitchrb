@@ -5,7 +5,7 @@ module Twitch
     def create(broadcaster_id:, moderator_id:, user_id:, reason:)
       attrs = { user_id: user_id, reason: reason }
 
-      response = post_request("moderation/warnings?#{URI.encode_www_form(broadcaster_id: broadcaster_id, moderator_id: moderator_id)}", body: { data: attrs })
+      response = post_request(query_path("moderation/warnings", broadcaster_id: broadcaster_id, moderator_id: moderator_id), body: { data: attrs })
       Collection.from_response(response, type: Warning)
     end
   end

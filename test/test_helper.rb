@@ -15,10 +15,13 @@ def helix_fixture(name)
   File.read(File.join(FIXTURES_DIR, "helix", "#{name}.json"))
 end
 
-def stub_helix(method, path, query: nil, fixture: nil, status: 200, body: nil)
+# request_body matches the JSON request body exactly, so stray params in the body fail the stub
+def stub_helix(method, path, query: nil, request_body: nil, fixture: nil, status: 200, body: nil)
   body ||= fixture ? helix_fixture(fixture) : "{}"
   stub = stub_request(method, "#{HELIX_URL}/#{path}")
   stub = stub.with(query: query) if query
+  # WebMock treats an empty hash as "match anything", so compare empty bodies as a string
+  stub = stub.with(body: request_body.empty? ? "{}" : request_body) if request_body
   stub.to_return(status: status, body: body, headers: { "Content-Type" => "application/json" })
 end
 

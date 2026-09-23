@@ -13,4 +13,13 @@ class ChannelsResourceTest < WebmockTest
     assert_equal Twitch::Channel, channel.class
     assert_equal "twitchdev", channel.broadcaster_login
   end
+
+  def test_channels_update_sends_broadcaster_id_in_query
+    stub_helix(:patch, "channels",
+      query: { "broadcaster_id" => "123" },
+      request_body: { title: "New title", game_id: "509658" },
+      status: 204, body: "")
+
+    assert_equal true, @client.channels.update(broadcaster_id: "123", title: "New title", game_id: "509658")
+  end
 end

@@ -5,7 +5,7 @@ module Twitch
     def create(broadcaster_id:, moderator_id:, user_id:, status:)
       attrs = { user_id: user_id, status: status }
       response = post_request(
-        "moderation/suspicious_users?#{URI.encode_www_form(broadcaster_id: broadcaster_id, moderator_id: moderator_id)}",
+        query_path("moderation/suspicious_users", broadcaster_id: broadcaster_id, moderator_id: moderator_id),
         body: attrs
       )
 

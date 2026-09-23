@@ -17,21 +17,20 @@ module Twitch
     # Broadcaster ID must match the user in the OAuth token
     # TODO: Allow the user to put any date format and then convert it to RFC3339
     def update(broadcaster_id:, **params)
-      patch_request("schedule/settings", body: params.merge(broadcaster_id: broadcaster_id))
+      patch_request(query_path("schedule/settings", params.merge(broadcaster_id: broadcaster_id)), body: {})
     end
 
     # Broadcaster ID must match the user in the OAuth token
     def create_segment(broadcaster_id:, start_time:, timezone:, duration:, is_recurring:, **params)
-      attrs = { broadcaster_id: broadcaster_id, start_time: start_time, duration: duration, timezone: timezone, is_recurring: is_recurring }
-      response = post_request("schedule/segment", body: attrs.merge(params))
+      attrs = { start_time: start_time, duration: duration, timezone: timezone, is_recurring: is_recurring }
+      response = post_request(query_path("schedule/segment", broadcaster_id: broadcaster_id), body: attrs.merge(params))
 
       StreamSchedule.new(response.body) if response.success?
     end
 
     # Broadcaster ID must match the user in the OAuth token
     def update_segment(broadcaster_id:, id:, **params)
-      attrs = { broadcaster_id: broadcaster_id, id: id }
-      response = patch_request("schedule/segment", body: attrs.merge(params))
+      response = patch_request(query_path("schedule/segment", broadcaster_id: broadcaster_id, id: id), body: params)
 
       StreamSchedule.new(response.body) if response.success?
     end

@@ -7,7 +7,7 @@ module Twitch
     end
 
     def create(broadcaster_id:, user_id:)
-      post_request("channels/vips", body: { broadcaster_id: broadcaster_id, user_id: user_id })
+      post_request(query_path("channels/vips", broadcaster_id: broadcaster_id, user_id: user_id), body: {})
     end
 
     def delete(broadcaster_id:, user_id:)

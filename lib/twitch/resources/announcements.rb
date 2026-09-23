@@ -5,7 +5,7 @@ module Twitch
     def create(broadcaster_id:, moderator_id:, message:, color: nil, for_source_only: nil)
       attrs = { message: message, color: color, for_source_only: for_source_only }
 
-      post_request("chat/announcements?#{URI.encode_www_form(broadcaster_id: broadcaster_id, moderator_id: moderator_id)}", body: attrs)
+      post_request(query_path("chat/announcements", broadcaster_id: broadcaster_id, moderator_id: moderator_id), body: attrs)
     end
   end
 end

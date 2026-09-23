@@ -33,6 +33,12 @@ module Twitch
       execute_request { client.connection.delete(url, params, headers) }
     end
 
+    # Builds a path with a query string, for write endpoints that take some parameters
+    # in the query string rather than the body. nil values are dropped.
+    def query_path(path, params)
+      "#{path}?#{URI.encode_www_form(params.compact)}"
+    end
+
     def execute_request
       response = yield
 

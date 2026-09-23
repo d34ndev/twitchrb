@@ -11,8 +11,8 @@ module Twitch
     # Required scope: moderator:manage:blocked_terms
     # moderator_id must match the currently authenticated user. Can be either the broadcaster ID or moderator ID
     def create(broadcaster_id:, moderator_id:, text:)
-      attrs = { broadcaster_id: broadcaster_id, moderator_id: moderator_id, text: text }
-      response = post_request("moderation/blocked_terms", body: attrs)
+      path = query_path("moderation/blocked_terms", broadcaster_id: broadcaster_id, moderator_id: moderator_id)
+      response = post_request(path, body: { text: text })
       BlockedTerm.new response.body.dig("data")[0]
     end
 

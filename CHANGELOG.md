@@ -8,6 +8,8 @@ Published release notes were sourced from GitHub releases where available. Older
 
 ### Fixed
 - Fixed multi-value query params (e.g. `users.retrieve(ids:)`, `games.retrieve(names:)`, `streams.list(user_id: [...])`, `clips.downloads(clip_ids:)`) being sent as `id[]=1&id[]=2`. They are now sent as repeated keys (`id=1&id=2`), which is the format Helix expects.
+- Fixed write endpoints sending query string parameters in the JSON body instead of the query string, contrary to the Twitch API reference. Affects `channels.update`, `custom_rewards.create`/`update`, `automod.check_status`/`check_status_multiple`/`update_settings`, `banned_users.create`, `blocked_terms.create`, `unban_requests.resolve`, `moderators.create`, `vips.create`, `raids.create`, `whispers.create`, `stream_schedule.update`/`create_segment`/`update_segment`, `users.update`, and `users.block_user` (whose `source_context` and `reason` options were being sent in the body).
+- `banned_users.create` no longer sends `"duration": null` for permanent bans.
 - Helix and OAuth requests now have default timeouts (30s read, 10s open) instead of waiting indefinitely. Configure with the `timeout:` and `open_timeout:` options on `Twitch::Client.new` and `Twitch::OAuth.new`.
 
 ## [1.11.0] - 2026-08-11

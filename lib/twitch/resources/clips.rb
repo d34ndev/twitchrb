@@ -39,11 +39,5 @@ module Twitch
 
       Collection.from_response(response, type: ClipDownload)
     end
-
-    private
-
-    def query_path(path, params)
-      "#{path}?#{URI.encode_www_form(params)}"
-    end
   end
 end

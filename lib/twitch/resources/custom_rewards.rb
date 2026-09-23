@@ -8,15 +8,15 @@ module Twitch
     end
 
     def create(broadcaster_id:, title:, cost:, **params)
-      attributes = { broadcaster_id: broadcaster_id, title: title, cost: cost }
-      response = post_request("channel_points/custom_rewards", body: attributes.merge(params))
+      attributes = { title: title, cost: cost }
+      response = post_request(query_path("channel_points/custom_rewards", broadcaster_id: broadcaster_id), body: attributes.merge(params))
 
       CustomReward.new(response.body.dig("data")[0]) if response.success?
     end
 
     def update(broadcaster_id:, reward_id:, **params)
-      attributes = { broadcaster_id: broadcaster_id, id: reward_id }
-      response = patch_request("channel_points/custom_rewards", body: attributes.merge(params))
+      path = query_path("channel_points/custom_rewards", broadcaster_id: broadcaster_id, id: reward_id)
+      response = patch_request(path, body: params)
 
       CustomReward.new(response.body.dig("data")[0]) if response.success?
     end

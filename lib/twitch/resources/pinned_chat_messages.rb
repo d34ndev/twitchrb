@@ -11,12 +11,12 @@ module Twitch
 
     # moderator_id must match the user in the OAuth token
     def create(broadcaster_id:, moderator_id:, message_id:, duration_seconds: nil)
-      put_request(query_path(broadcaster_id:, moderator_id:, message_id:, duration_seconds:), body: {})
+      put_request(pins_path(broadcaster_id:, moderator_id:, message_id:, duration_seconds:), body: {})
     end
 
     # moderator_id must match the user in the OAuth token
     def update(broadcaster_id:, moderator_id:, message_id:, duration_seconds: nil)
-      patch_request(query_path(broadcaster_id:, moderator_id:, message_id:, duration_seconds:), body: {})
+      patch_request(pins_path(broadcaster_id:, moderator_id:, message_id:, duration_seconds:), body: {})
     end
 
     # moderator_id must match the user in the OAuth token
@@ -26,15 +26,8 @@ module Twitch
 
     private
 
-    def query_path(broadcaster_id:, moderator_id:, message_id:, duration_seconds:)
-      params = {
-        broadcaster_id: broadcaster_id,
-        moderator_id: moderator_id,
-        message_id: message_id,
-        duration_seconds: duration_seconds
-      }.compact
-
-      "chat/pins?#{URI.encode_www_form(params)}"
+    def pins_path(broadcaster_id:, moderator_id:, message_id:, duration_seconds:)
+      query_path("chat/pins", broadcaster_id: broadcaster_id, moderator_id: moderator_id, message_id: message_id, duration_seconds: duration_seconds)
     end
   end
 end

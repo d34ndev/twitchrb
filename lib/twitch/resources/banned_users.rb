@@ -9,8 +9,8 @@ module Twitch
     # Required scope: moderator:manage:banned_users
     # moderator_id must match the currently authenticated user. Can be either the broadcaster ID or moderator ID
     def create(broadcaster_id:, moderator_id:, user_id:, reason:, duration: nil)
-      attrs = { broadcaster_id: broadcaster_id, moderator_id: moderator_id, data: { user_id: user_id, reason: reason, duration: duration } }
-      response = post_request("moderation/bans", body: attrs)
+      path = query_path("moderation/bans", broadcaster_id: broadcaster_id, moderator_id: moderator_id)
+      response = post_request(path, body: { data: { user_id: user_id, reason: reason, duration: duration }.compact })
       BannedUser.new response.body.dig("data")[0]
     end
 

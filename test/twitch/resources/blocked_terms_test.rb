@@ -7,7 +7,7 @@ class BlockedTermsResourceTest < WebmockTest
 
   def test_blocked_terms_create_returns_blocked_term
     stub_request(:post, "#{HELIX_URL}/moderation/blocked_terms")
-      .with(body: hash_including("broadcaster_id" => "123", "moderator_id" => "321", "text" => "crac"))
+      .with(query: { "broadcaster_id" => "123", "moderator_id" => "321" }, body: { "text" => "crac" })
       .to_return(
         status: 200,
         body: {
