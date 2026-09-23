@@ -69,4 +69,34 @@ class ObjectTest < Minitest::Test
     assert_equal "value1", object.string_key
     assert_equal "value2", object.symbol_key
   end
+
+  def test_to_h_converts_nested_objects_to_hashes
+    object = Twitch::Object.new("id" => "1", "settings" => { "slow_mode" => true }, "items" => [ { "a" => 1 }, 2 ])
+
+    assert_equal({ id: "1", settings: { slow_mode: true }, items: [ { a: 1 }, 2 ] }, object.to_h)
+  end
+
+  def test_to_h_with_block
+    object = Twitch::Object.new("id" => "1", "name" => "test")
+
+    assert_equal({ "id" => "1", "name" => "test" }, object.to_h { |key, value| [ key.to_s, value ] })
+  end
+
+  def test_to_json_serializes_nested_objects
+    object = Twitch::Object.new("id" => "1", "settings" => { "slow_mode" => true }, "items" => [ { "a" => 1 } ])
+
+    assert_equal({ "id" => "1", "settings" => { "slow_mode" => true }, "items" => [ { "a" => 1 } ] }, JSON.parse(object.to_json))
+  end
+
+  def test_to_json_works_inside_other_structures
+    users = [ Twitch::User.new("id" => "1", "images" => { "profile" => "url" }) ]
+
+    assert_equal [ { "id" => "1", "images" => { "profile" => "url" } } ], JSON.parse(users.to_json)
+  end
+
+  def test_as_json_returns_nested_hash
+    object = Twitch::Object.new("settings" => { "slow_mode" => true })
+
+    assert_equal({ settings: { slow_mode: true } }, object.as_json)
+  end
 end
