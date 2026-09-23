@@ -68,6 +68,26 @@ module Twitch
       Collection.from_response(response, type: Emote)
     end
 
+    # Gets all extensions the authenticated user has installed, active or not
+    # Required scope: user:read:broadcast or user:edit:broadcast (needed to include inactive extensions)
+    def extensions
+      response = get_request("users/extensions/list")
+      Collection.from_response(response, type: UserExtension)
+    end
+
+    # Gets the active extensions installed for a user, or the authenticated user if user_id is omitted
+    def active_extensions(user_id: nil)
+      response = get_request("users/extensions", params: { user_id: user_id }.compact)
+      UserActiveExtensions.new(response.body.dig("data"))
+    end
+
+    # Required scope: user:edit:broadcast
+    # data: { panel: { "1" => { active: true, id: "abc", version: "1.0.0" } }, overlay: {...}, component: {...} }
+    def update_extensions(data:)
+      response = put_request("users/extensions", body: { data: data })
+      UserActiveExtensions.new(response.body.dig("data"))
+    end
+
     def authorization(id: nil, ids: nil)
       raise "Either id or ids is required" unless !id.nil? || !ids.nil?
 

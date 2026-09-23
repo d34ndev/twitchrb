@@ -185,6 +185,46 @@ module Twitch
       SuspiciousUsersResource.new(self)
     end
 
+    def ads
+      AdsResource.new(self)
+    end
+
+    def analytics
+      AnalyticsResource.new(self)
+    end
+
+    def bits
+      BitsResource.new(self)
+    end
+
+    def chat_settings
+      ChatSettingsResource.new(self)
+    end
+
+    def content_classification_labels
+      ContentClassificationLabelsResource.new(self)
+    end
+
+    def drops_entitlements
+      DropsEntitlementsResource.new(self)
+    end
+
+    def extensions
+      ExtensionsResource.new(self)
+    end
+
+    def guest_star
+      GuestStarResource.new(self)
+    end
+
+    def shield_mode
+      ShieldModeResource.new(self)
+    end
+
+    def teams
+      TeamsResource.new(self)
+    end
+
     def connection
       @connection ||= Faraday.new(BASE_URL) do |conn|
         conn.request :authorization, :Bearer, access_token

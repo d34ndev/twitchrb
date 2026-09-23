@@ -261,6 +261,19 @@ This library includes the ability to create, refresh and revoke OAuth tokens.
 # #<Twitch::UserAuthorization user_id="72938118", user_name="deanpcmad", user_login="deanpcmad", scopes=["user:read:email"], has_authorized=true>
 @client.users.authorization(id: 123)
 @client.users.authorization(ids: [123, 321])
+
+# Gets all extensions the authenticated user has installed, active or not
+# Required scope: user:read:broadcast or user:edit:broadcast (needed to include inactive extensions)
+@client.users.extensions
+
+# Gets the active extensions for a user, or the authenticated user if user_id is omitted
+@client.users.active_extensions(user_id: 123)
+
+# Updates the authenticated user's active extensions
+# Required scope: user:edit:broadcast
+@client.users.update_extensions(data: {
+  panel: { "1" => { active: true, id: "abc123", version: "1.0.0" } }
+})
 ```
 
 ### Channels
@@ -734,6 +747,11 @@ messages = [{msg_id: "abc1", msg_text: "is this allowed?"}, {msg_id: "abc2", msg
 # Required scope: channel:read:charity
 # broadcaster_id must match the currently authenticated user
 @client.charity_campaigns.list broadcaster_id: 123
+
+# Gets the donations made to the broadcaster's active charity campaign
+# Required scope: channel:read:charity
+# broadcaster_id must match the currently authenticated user
+@client.charity_campaigns.donations(broadcaster_id: 123)
 ```
 
 ### Chatters
@@ -975,6 +993,175 @@ outcomes = [
 # Required scope: channel:read:hype_train
 # broadcaster_id must match the currently authenticated user
 @client.hype_train_status.retrieve(broadcaster_id: 123)
+```
+
+
+### Ads
+
+```ruby
+# Gets the broadcaster's ad schedule and snooze details
+# Required scope: channel:read:ads
+# broadcaster_id must match the currently authenticated user
+@client.ads.schedule(broadcaster_id: 123)
+
+# Pushes back the next scheduled ad by 5 minutes
+# Required scope: channel:manage:ads
+# broadcaster_id must match the currently authenticated user
+@client.ads.snooze(broadcaster_id: 123)
+```
+
+### Analytics
+
+```ruby
+# Gets URLs for downloadable CSV reports about the authenticated user's extensions
+# Required scope: analytics:read:extensions
+# Available parameters: extension_id, type, started_at, ended_at, first, after
+@client.analytics.extensions(extension_id: "abc123")
+
+# Gets URLs for downloadable CSV reports about the authenticated user's games
+# Required scope: analytics:read:games
+# Available parameters: game_id, type, started_at, ended_at, first, after
+@client.analytics.games(game_id: 123)
+```
+
+### Bits
+
+```ruby
+# Gets the Bits leaderboard for the authenticated broadcaster
+# Required scope: bits:read
+# Available parameters: count, period, started_at, user_id
+@client.bits.leaderboard(count: 10, period: "week")
+
+# Gets the global Cheermotes, plus a broadcaster's custom Cheermotes if broadcaster_id is given
+@client.bits.cheermotes
+@client.bits.cheermotes(broadcaster_id: 123)
+```
+
+### Chat Settings
+
+```ruby
+# Gets a broadcaster's chat settings
+# Pass moderator_id (matching the authenticated user) to include non_moderator_chat_delay settings
+@client.chat_settings.retrieve(broadcaster_id: 123)
+@client.chat_settings.retrieve(broadcaster_id: 123, moderator_id: 321)
+
+# Updates a broadcaster's chat settings
+# Required scope: moderator:manage:chat_settings
+# moderator_id must match the currently authenticated user
+# Available attributes: emote_mode, follower_mode, follower_mode_duration, non_moderator_chat_delay,
+# non_moderator_chat_delay_duration, slow_mode, slow_mode_wait_time, subscriber_mode, unique_chat_mode
+@client.chat_settings.update(broadcaster_id: 123, moderator_id: 321, slow_mode: true, slow_mode_wait_time: 10)
+```
+
+### Shield Mode
+
+```ruby
+# Gets a broadcaster's Shield Mode status
+# Required scope: moderator:read:shield_mode or moderator:manage:shield_mode
+# moderator_id must match the currently authenticated user
+@client.shield_mode.retrieve(broadcaster_id: 123, moderator_id: 321)
+
+# Turns Shield Mode on or off
+# Required scope: moderator:manage:shield_mode
+# moderator_id must match the currently authenticated user
+@client.shield_mode.update(broadcaster_id: 123, moderator_id: 321, is_active: true)
+```
+
+### Content Classification Labels
+
+```ruby
+# Gets the content classification labels that can be applied to a channel with channels.update
+@client.content_classification_labels.list
+@client.content_classification_labels.list(locale: "en-US")
+```
+
+### Teams
+
+```ruby
+# Gets a team by ID or name
+@client.teams.retrieve(id: 123)
+@client.teams.retrieve(name: "staff")
+
+# Gets the teams a broadcaster is a member of
+@client.teams.channel(broadcaster_id: 123)
+```
+
+### Drops Entitlements
+
+```ruby
+# Gets Drops entitlements
+# The Client ID must be owned by a member of the organization that owns the game
+# Available parameters: id, user_id, game_id, fulfillment_status, first, after
+@client.drops_entitlements.list(user_id: 123)
+
+# Updates the fulfillment status of Drops entitlements (CLAIMED or FULFILLED)
+@client.drops_entitlements.update(entitlement_ids: ["abc", "def"], fulfillment_status: "FULFILLED")
+```
+
+### Extensions
+
+Most Extensions endpoints require a signed JWT created by your Extension Backend Service rather than an
+OAuth token. Pass the JWT as the client's `access_token`. See
+[Signing the JWT](https://dev.twitch.tv/docs/extensions/building/#signing-the-jwt).
+
+```ruby
+@ext_client = Twitch::Client.new(client_id: "extension-client-id", access_token: signed_jwt)
+
+# Gets an extension (requires a JWT), or a released extension (app or user token)
+@ext_client.extensions.retrieve(extension_id: "abc123")
+@client.extensions.released(extension_id: "abc123", extension_version: "1.0.0")
+
+# Gets live channels that have the extension installed or activated
+@client.extensions.live_channels(extension_id: "abc123")
+
+# Gets and sets configuration segments (requires a JWT)
+# segment: broadcaster, developer or global. Pass an array to get more than one.
+@ext_client.extensions.configuration(extension_id: "abc123", segment: "broadcaster", broadcaster_id: 123)
+@ext_client.extensions.set_configuration(extension_id: "abc123", segment: "broadcaster", broadcaster_id: 123, content: "{}", version: "1")
+@ext_client.extensions.set_required_configuration(broadcaster_id: 123, extension_id: "abc123", extension_version: "1.0.0", required_configuration: "RCS")
+
+# Sends a PubSub message or chat message (requires a JWT)
+@ext_client.extensions.send_pubsub_message(broadcaster_id: 123, target: ["broadcast"], message: "hello")
+@ext_client.extensions.send_chat_message(broadcaster_id: 123, text: "hello", extension_id: "abc123", extension_version: "1.0.0")
+
+# Gets or creates the extension's JWT secrets (requires a JWT)
+@ext_client.extensions.secrets(extension_id: "abc123")
+@ext_client.extensions.create_secret(extension_id: "abc123", delay: 300)
+
+# Gets and updates Bits products
+# Requires an app access token whose Client ID matches the extension's
+@app_client.extensions.bits_products(should_include_all: true)
+@app_client.extensions.update_bits_product(sku: "sku-1", cost: { amount: 100, type: "bits" }, display_name: "Thing")
+
+# Gets Bits transactions for the extension
+# Requires an app access token
+@app_client.extensions.transactions(extension_id: "abc123")
+```
+
+### Guest Star (Beta)
+
+```ruby
+# Gets and updates a channel's Guest Star settings
+@client.guest_star.settings(broadcaster_id: 123, moderator_id: 321)
+@client.guest_star.update_settings(broadcaster_id: 123, slot_count: 4)
+
+# Gets, creates and ends a Guest Star session
+@client.guest_star.session(broadcaster_id: 123, moderator_id: 321)
+@client.guest_star.create_session(broadcaster_id: 123)
+@client.guest_star.end_session(broadcaster_id: 123, session_id: "abc")
+
+# Gets, sends and deletes invites
+@client.guest_star.invites(broadcaster_id: 123, moderator_id: 321, session_id: "abc")
+@client.guest_star.send_invite(broadcaster_id: 123, moderator_id: 321, session_id: "abc", guest_id: 456)
+@client.guest_star.delete_invite(broadcaster_id: 123, moderator_id: 321, session_id: "abc", guest_id: 456)
+
+# Assigns, moves and removes guests in slots
+@client.guest_star.assign_slot(broadcaster_id: 123, moderator_id: 321, session_id: "abc", guest_id: 456, slot_id: "1")
+@client.guest_star.update_slot(broadcaster_id: 123, moderator_id: 321, session_id: "abc", source_slot_id: "1", destination_slot_id: "2")
+@client.guest_star.delete_slot(broadcaster_id: 123, moderator_id: 321, session_id: "abc", guest_id: 456, slot_id: "1")
+
+# Updates a slot's audio, video, live and volume settings
+@client.guest_star.update_slot_settings(broadcaster_id: 123, moderator_id: 321, session_id: "abc", slot_id: "1", volume: 50)
 ```
 
 

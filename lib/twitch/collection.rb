@@ -11,8 +11,14 @@ module Twitch
       new(
         data: data.map { |attrs| type.new(attrs) },
         total: body["total"] || data.count,
-        cursor: body.dig("pagination", "cursor")
+        cursor: cursor_from(body["pagination"])
       )
+    end
+
+    # Most endpoints return pagination as { "cursor": "..." }, but a few
+    # (e.g. Get Extension Live Channels) return the cursor as a bare string
+    def self.cursor_from(pagination)
+      pagination.is_a?(Hash) ? pagination["cursor"] : pagination
     end
 
     def initialize(data:, total:, cursor:)

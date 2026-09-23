@@ -9,6 +9,20 @@ Published release notes were sourced from GitHub releases where available. Older
 ### Changed
 - The minimum supported Ruby version is now 3.3 (previously declared as 2.3, though the gem already required 3.1+). This matches the versions tested in CI.
 
+### Added
+- `ads.schedule` and `ads.snooze` (Get Ad Schedule, Snooze Next Ad).
+- `analytics.extensions` and `analytics.games`.
+- `bits.leaderboard` and `bits.cheermotes`.
+- `charity_campaigns.donations`.
+- `chat_settings.retrieve` and `chat_settings.update`.
+- `shield_mode.retrieve` and `shield_mode.update`.
+- `content_classification_labels.list`.
+- `teams.retrieve` and `teams.channel`.
+- `drops_entitlements.list` and `drops_entitlements.update`.
+- `users.extensions`, `users.active_extensions`, and `users.update_extensions`.
+- An `extensions` resource covering the Extensions API: `retrieve`, `released`, `live_channels`, `configuration`, `set_configuration`, `set_required_configuration`, `send_pubsub_message`, `send_chat_message`, `secrets`, `create_secret`, `bits_products`, `update_bits_product`, and `transactions`.
+- A `guest_star` resource covering the Guest Star beta API.
+
 ### Removed
 - Removed methods for endpoints Twitch has shut down, which could only return errors:
   - `banned_events.list` and `moderator_events.list` (Get Banned Events / Get Moderator Events).
@@ -19,6 +33,7 @@ Published release notes were sourced from GitHub releases where available. Older
 ### Fixed
 - Fixed multi-value query params (e.g. `users.retrieve(ids:)`, `games.retrieve(names:)`, `streams.list(user_id: [...])`, `clips.downloads(clip_ids:)`) being sent as `id[]=1&id[]=2`. They are now sent as repeated keys (`id=1&id=2`), which is the format Helix expects.
 - Fixed write endpoints sending query string parameters in the JSON body instead of the query string, contrary to the Twitch API reference. Affects `channels.update`, `custom_rewards.create`/`update`, `automod.check_status`/`check_status_multiple`/`update_settings`, `banned_users.create`, `blocked_terms.create`, `unban_requests.resolve`, `moderators.create`, `vips.create`, `raids.create`, `whispers.create`, `stream_schedule.update`/`create_segment`/`update_segment`, `users.update`, and `users.block_user` (whose `source_context` and `reason` options were being sent in the body).
+- `Collection#cursor` now works for endpoints that return `pagination` as a bare string (such as Get Extension Live Channels) instead of raising.
 - `banned_users.create` no longer sends `"duration": null` for permanent bans.
 - Helix and OAuth requests now have default timeouts (30s read, 10s open) instead of waiting indefinitely. Configure with the `timeout:` and `open_timeout:` options on `Twitch::Client.new` and `Twitch::OAuth.new`.
 

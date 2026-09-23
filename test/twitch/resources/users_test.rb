@@ -112,4 +112,34 @@ class UsersResourceTest < WebmockTest
 
     assert_equal true, @client.users.block_user(target_user_id: "9876", source_context: "chat", reason: "spam")
   end
+
+  def test_users_extensions
+    stub_helix(:get, "users/extensions/list",
+      body: { data: [ { id: "ext-1", name: "Test", can_activate: true, type: [ "panel" ] } ] }.to_json)
+
+    extensions = @client.users.extensions
+
+    assert_instance_of Twitch::UserExtension, extensions.first
+    assert_equal [ "panel" ], extensions.first.type
+  end
+
+  def test_users_active_extensions
+    stub_helix(:get, "users/extensions", query: { "user_id" => "123" },
+      body: { data: { panel: { "1" => { active: true, id: "ext-1", version: "1.0.0" } }, overlay: {}, component: {} } }.to_json)
+
+    extensions = @client.users.active_extensions(user_id: "123")
+
+    assert_instance_of Twitch::UserActiveExtensions, extensions
+    assert_equal "ext-1", extensions.panel["1"].id
+  end
+
+  def test_users_update_extensions
+    data = { panel: { "1" => { active: true, id: "ext-1", version: "1.0.0" } } }
+    stub_helix(:put, "users/extensions", request_body: { data: data },
+      body: { data: { panel: { "1" => { active: true, id: "ext-1", version: "1.0.0" } } } }.to_json)
+
+    extensions = @client.users.update_extensions(data: data)
+
+    assert_equal true, extensions.panel["1"].active
+  end
 end
