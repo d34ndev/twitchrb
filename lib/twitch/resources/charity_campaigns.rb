@@ -16,7 +16,7 @@ module Twitch
     # Available parameters: first, after
     def donations(broadcaster_id:, **params)
       response = get_request("charity/donations", params: params.merge(broadcaster_id: broadcaster_id))
-      Collection.from_response(response, type: CharityDonation)
+      collection(response, type: CharityDonation)
     end
   end
 end

@@ -3,7 +3,7 @@ module Twitch
     def list(broadcaster_id:, moderator_id:, status:, **params)
       attrs = { broadcaster_id: broadcaster_id, moderator_id: moderator_id, status: status }
       response = get_request("moderation/unban_requests", params: attrs.merge(params))
-      Collection.from_response(response, type: UnbanRequest)
+      collection(response, type: UnbanRequest)
     end
 
     def resolve(broadcaster_id:, moderator_id:, id:, status:, **params)

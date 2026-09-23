@@ -5,7 +5,7 @@ module Twitch
     # Required scope: channel:read:subscriptions
     def list(broadcaster_id:, **params)
       response = get_request("subscriptions", params: params.merge(broadcaster_id: broadcaster_id))
-      Collection.from_response(response, type: Subscription)
+      collection(response, type: Subscription)
     end
 
     # Checks if a User is subscribed to a Broadcaster
@@ -15,7 +15,7 @@ module Twitch
     def is_subscribed(broadcaster_id:, user_id:, **params)
       attrs = { broadcaster_id: broadcaster_id, user_id: user_id }
       response = get_request("subscriptions/user", params: attrs.merge(params))
-      Collection.from_response(response, type: Subscription)
+      collection(response, type: Subscription)
     end
 
     # Grabs the number of Subscribers and Subscriber Points a broadcaster has

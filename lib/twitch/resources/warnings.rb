@@ -6,7 +6,7 @@ module Twitch
       attrs = { user_id: user_id, reason: reason }
 
       response = post_request(query_path("moderation/warnings", broadcaster_id: broadcaster_id, moderator_id: moderator_id), body: { data: attrs })
-      Collection.from_response(response, type: Warning)
+      collection(response, type: Warning)
     end
   end
 end

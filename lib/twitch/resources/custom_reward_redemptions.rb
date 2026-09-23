@@ -5,7 +5,7 @@ module Twitch
     def list(broadcaster_id:, reward_id:, status:, **params)
       attributes = { broadcaster_id: broadcaster_id, reward_id: reward_id, status: status.upcase }
       response = get_request("channel_points/custom_rewards/redemptions", params: attributes.merge(params))
-      Collection.from_response(response, type: CustomRewardRedemption)
+      collection(response, type: CustomRewardRedemption)
     end
 
     # Required scope: channel:manage:redemptions

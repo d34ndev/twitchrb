@@ -25,7 +25,7 @@ module Twitch
     # Available parameters: first, after
     def live_channels(extension_id:, **params)
       response = get_request("extensions/live", params: params.merge(extension_id: extension_id))
-      Collection.from_response(response, type: ExtensionLiveChannel)
+      collection(response, type: ExtensionLiveChannel)
     end
 
     # Requires a signed JWT
@@ -33,7 +33,7 @@ module Twitch
     def configuration(extension_id:, segment:, broadcaster_id: nil)
       params = { extension_id: extension_id, segment: segment, broadcaster_id: broadcaster_id }.compact
       response = get_request("extensions/configurations", params: params)
-      Collection.from_response(response, type: ExtensionConfigurationSegment)
+      collection(response, type: ExtensionConfigurationSegment)
     end
 
     # Requires a signed JWT
@@ -64,20 +64,20 @@ module Twitch
     # Requires a signed JWT
     def secrets(extension_id:)
       response = get_request("extensions/jwt/secrets", params: { extension_id: extension_id })
-      Collection.from_response(response, type: ExtensionSecret)
+      collection(response, type: ExtensionSecret)
     end
 
     # Requires a signed JWT
     # delay: seconds before the new secret becomes active (minimum 300)
     def create_secret(extension_id:, delay: nil)
       response = post_request(query_path("extensions/jwt/secrets", extension_id: extension_id, delay: delay), body: {})
-      Collection.from_response(response, type: ExtensionSecret)
+      collection(response, type: ExtensionSecret)
     end
 
     # Requires an app access token whose Client ID matches the extension's
     def bits_products(should_include_all: nil)
       response = get_request("bits/extensions", params: { should_include_all: should_include_all }.compact)
-      Collection.from_response(response, type: ExtensionBitsProduct)
+      collection(response, type: ExtensionBitsProduct)
     end
 
     # Requires an app access token whose Client ID matches the extension's
@@ -93,7 +93,7 @@ module Twitch
     # Available parameters: id, first, after
     def transactions(extension_id:, **params)
       response = get_request("extensions/transactions", params: params.merge(extension_id: extension_id))
-      Collection.from_response(response, type: ExtensionTransaction)
+      collection(response, type: ExtensionTransaction)
     end
   end
 end

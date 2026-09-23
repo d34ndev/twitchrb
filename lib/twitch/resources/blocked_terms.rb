@@ -5,7 +5,7 @@ module Twitch
     def list(broadcaster_id:, moderator_id:, **params)
       attrs = { broadcaster_id: broadcaster_id, moderator_id: moderator_id }
       response = get_request("moderation/blocked_terms", params: attrs.merge(params))
-      Collection.from_response(response, type: BlockedTerm)
+      collection(response, type: BlockedTerm)
     end
 
     # Required scope: moderator:manage:blocked_terms

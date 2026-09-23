@@ -14,7 +14,7 @@ module Twitch
     # Gets the teams that a broadcaster is a member of
     def channel(broadcaster_id:)
       response = get_request("teams/channel", params: { broadcaster_id: broadcaster_id })
-      Collection.from_response(response, type: Team)
+      collection(response, type: Team)
     end
   end
 end

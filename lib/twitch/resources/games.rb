@@ -17,13 +17,13 @@ module Twitch
       if id || name
         body.empty? ? nil : Game.new(body[0])
       else
-        Collection.from_response(response, type: Game)
+        collection(response, type: Game)
       end
     end
 
     def top(**params)
       response = get_request("games/top", params: params)
-      Collection.from_response(response, type: Game)
+      collection(response, type: Game)
     end
   end
 end

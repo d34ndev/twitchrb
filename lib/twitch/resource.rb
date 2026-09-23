@@ -33,6 +33,23 @@ module Twitch
       execute_request { client.connection.delete(url, params, headers) }
     end
 
+    # Builds a Collection that can fetch its following pages by repeating the
+    # original GET request with the cursor as the after param
+    def collection(response, type:)
+      Collection.from_response(response, type: type, next_page: next_page_fetcher(response, type))
+    end
+
+    def next_page_fetcher(response, type)
+      return unless response.respond_to?(:env) && response.env.method == :get
+
+      url = response.env.url
+      path = url.path.delete_prefix("#{URI(Client::BASE_URL).path}/")
+      params = Faraday::FlatParamsEncoder.decode(url.query) || {}
+      params.delete("before")
+
+      ->(cursor) { collection(get_request(path, params: params.merge("after" => cursor)), type: type) }
+    end
+
     # Builds a path with a query string, for write endpoints that take some parameters
     # in the query string rather than the body. nil values are dropped.
     def query_path(path, params)

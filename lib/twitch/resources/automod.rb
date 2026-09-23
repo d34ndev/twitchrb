@@ -13,7 +13,7 @@ module Twitch
     def check_status_multiple(broadcaster_id:, messages:)
       attrs = { data: messages }
       response = post_request(query_path("moderation/enforcements/status", broadcaster_id: broadcaster_id), body: attrs)
-      Collection.from_response(response, type: AutomodStatus)
+      collection(response, type: AutomodStatus)
     end
 
     def manage_message(user_id:, msg_id:, action:)

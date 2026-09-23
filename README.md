@@ -92,9 +92,36 @@ results.last
 results.cursor
 #=> "abc123"
 
-# Retrieve the next page
+# Retrieve the next page manually
 @client.clips.list(broadcaster_id: 123, after: results.cursor)
 #=> Twitch::Collection
+```
+
+#### Automatic Pagination
+
+Collections from paginated endpoints can fetch their following pages for you. Each extra page is a separate
+API request (and counts towards your rate limit), so use `first:` to request up to 100 items per page.
+
+```ruby
+followers = @client.channels.followers(broadcaster_id: 123, first: 100)
+
+# Fetch the next page, or nil on the last page
+followers.next_page? #=> true
+followers.next_page  #=> Twitch::Collection
+
+# Iterate over every item across all pages. Pages are fetched lazily, only as needed.
+followers.auto_paginate.each { |follower| puts follower.user_name }
+
+# Stop after 250 items, without fetching any more pages than needed
+followers.auto_paginate.first(250)
+
+# Get every item as an array
+followers.auto_paginate.to_a
+
+# Iterate page by page
+followers.each_page do |page|
+  puts "#{page.data.size} followers on this page"
+end
 ```
 
 ### Rate Limiting

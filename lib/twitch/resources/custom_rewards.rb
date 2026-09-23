@@ -4,7 +4,7 @@ module Twitch
     # Broadcaster ID must match the user in the OAuth token
     def list(broadcaster_id:, **params)
       response = get_request("channel_points/custom_rewards", params: params.merge(broadcaster_id: broadcaster_id))
-      Collection.from_response(response, type: CustomReward)
+      collection(response, type: CustomReward)
     end
 
     def create(broadcaster_id:, title:, cost:, **params)

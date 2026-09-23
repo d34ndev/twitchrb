@@ -17,7 +17,7 @@ module Twitch
       if id || username
         body.empty? ? nil : User.new(body[0])
       else
-        Collection.from_response(response, type: User)
+        collection(response, type: User)
       end
     end
 
@@ -32,7 +32,7 @@ module Twitch
       if user_ids
         ids = user_ids.is_a?(Array) ? user_ids : user_ids.split(",")
         response = get_request("chat/color", params: { user_id: ids.map { |i| i.to_s.strip } })
-        Collection.from_response(response, type: UserColor)
+        collection(response, type: UserColor)
       else
         response = get_request("chat/color", params: { user_id: user_id })
         UserColor.new response.body.dig("data")[0]
@@ -49,7 +49,7 @@ module Twitch
     # Required scope: user:read:blocked_users
     def blocks(broadcaster_id:, **params)
       response = get_request("users/blocks", params: params.merge(broadcaster_id: broadcaster_id))
-      Collection.from_response(response, type: BlockedUser)
+      collection(response, type: BlockedUser)
     end
 
     # Required scope: user:manage:blocked_users
@@ -65,14 +65,14 @@ module Twitch
     def emotes(user_id:, **params)
       attrs = { user_id: user_id }
       response = get_request("chat/emotes/user", params: attrs.merge(params))
-      Collection.from_response(response, type: Emote)
+      collection(response, type: Emote)
     end
 
     # Gets all extensions the authenticated user has installed, active or not
     # Required scope: user:read:broadcast or user:edit:broadcast (needed to include inactive extensions)
     def extensions
       response = get_request("users/extensions/list")
-      Collection.from_response(response, type: UserExtension)
+      collection(response, type: UserExtension)
     end
 
     # Gets the active extensions installed for a user, or the authenticated user if user_id is omitted
@@ -97,7 +97,7 @@ module Twitch
         response = get_request("authorization/users", params: { user_id: ids })
       end
 
-      Collection.from_response(response, type: UserAuthorization)
+      collection(response, type: UserAuthorization)
     end
   end
 end

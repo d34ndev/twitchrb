@@ -7,7 +7,7 @@ module Twitch
       attrs = { broadcaster_id: broadcaster_id, moderator_id: moderator_id }
       response = get_request("chat/chatters", params: attrs.merge(params))
 
-      Collection.from_response(response, type: Chatter)
+      collection(response, type: Chatter)
     end
   end
 end

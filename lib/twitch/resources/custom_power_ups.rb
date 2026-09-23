@@ -7,7 +7,7 @@ module Twitch
       params[:id] = ids if ids
 
       response = get_request("bits/custom_power_ups", params: params)
-      Collection.from_response(response, type: CustomPowerUp)
+      collection(response, type: CustomPowerUp)
     end
   end
 end

@@ -2,7 +2,7 @@ module Twitch
   class EventsubConduitsResource < Resource
     def list(**params)
       response = get_request("eventsub/conduits", params: params)
-      Collection.from_response(response, type: EventsubConduit)
+      collection(response, type: EventsubConduit)
     end
 
     def create(shard_count:)
@@ -23,12 +23,12 @@ module Twitch
 
     def shards(id:, **params)
       response = get_request("eventsub/conduits/shards", params: { conduit_id: id }.merge(params))
-      Collection.from_response(response, type: EventsubConduitShard)
+      collection(response, type: EventsubConduitShard)
     end
 
     def update_shards(id:, shards:)
       response = patch_request("eventsub/conduits/shards", body: { conduit_id: id, shards: shards })
-      Collection.from_response(response, type: EventsubConduitShard)
+      collection(response, type: EventsubConduitShard)
     end
   end
 end

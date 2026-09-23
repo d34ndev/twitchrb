@@ -9,7 +9,7 @@ module Twitch
     # user_id must match the authenticated user
     def followed(user_id:, **params)
       response = get_request("channels/followed", params: params.merge(user_id: user_id))
-      Collection.from_response(response, type: User)
+      collection(response, type: User)
     end
 
     # Retrieve a list of users that follow a specified broadcaster
@@ -17,7 +17,7 @@ module Twitch
     # broadcaster_id must match the authenticated user
     def followers(broadcaster_id:, **params)
       response = get_request("channels/followers", params: params.merge(broadcaster_id: broadcaster_id))
-      Collection.from_response(response, type: User)
+      collection(response, type: User)
     end
 
     # Grabs the number of Followers a broadcaster has
@@ -43,7 +43,7 @@ module Twitch
     # Requires scope: channel:read:editors
     def editors(broadcaster_id:)
       response = get_request("channels/editors", params: { broadcaster_id: broadcaster_id })
-      Collection.from_response(response, type: ChannelEditor)
+      collection(response, type: ChannelEditor)
     end
 
     def stream_key(broadcaster_id:)

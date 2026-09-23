@@ -43,7 +43,7 @@ module Twitch
     # Required scope: channel:read:guest_star, channel:manage:guest_star, moderator:read:guest_star or moderator:manage:guest_star
     def invites(broadcaster_id:, moderator_id:, session_id:)
       response = get_request("guest_star/invites", params: { broadcaster_id: broadcaster_id, moderator_id: moderator_id, session_id: session_id })
-      Collection.from_response(response, type: GuestStarInvite)
+      collection(response, type: GuestStarInvite)
     end
 
     # Required scope: channel:manage:guest_star or moderator:manage:guest_star

@@ -4,7 +4,7 @@ module Twitch
       raise "broadcaster_id or game_id is required" unless !params[:broadcaster_id].nil? || !params[:game_id].nil?
 
       response = get_request("clips", params: params)
-      Collection.from_response(response, type: Clip)
+      collection(response, type: Clip)
     end
 
     def retrieve(id:)
@@ -37,7 +37,7 @@ module Twitch
       ids = clip_ids || Array(clip_id)
       response = get_request("clips/downloads", params: { editor_id: editor_id, broadcaster_id: broadcaster_id, clip_id: ids })
 
-      Collection.from_response(response, type: ClipDownload)
+      collection(response, type: ClipDownload)
     end
   end
 end

@@ -3,7 +3,7 @@ module Twitch
     # Broadcaster ID must match the user in the OAuth token
     def list(broadcaster_id:, **params)
       response = get_request("channels/vips", params: params.merge(broadcaster_id: broadcaster_id))
-      Collection.from_response(response, type: Vip)
+      collection(response, type: Vip)
     end
 
     def create(broadcaster_id:, user_id:)

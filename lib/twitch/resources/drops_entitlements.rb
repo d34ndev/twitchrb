@@ -4,14 +4,14 @@ module Twitch
     # Available parameters: id, user_id, game_id, fulfillment_status, first, after
     def list(**params)
       response = get_request("entitlements/drops", params: params)
-      Collection.from_response(response, type: DropsEntitlement)
+      collection(response, type: DropsEntitlement)
     end
 
     # fulfillment_status: CLAIMED or FULFILLED
     # Returns a collection of results grouped by status, each with the affected ids
     def update(entitlement_ids:, fulfillment_status:)
       response = patch_request("entitlements/drops", body: { entitlement_ids: Array(entitlement_ids), fulfillment_status: fulfillment_status })
-      Collection.from_response(response, type: DropsEntitlementUpdate)
+      collection(response, type: DropsEntitlementUpdate)
     end
   end
 end

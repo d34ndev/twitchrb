@@ -2,7 +2,7 @@ module Twitch
   class EventsubSubscriptionsResource < Resource
     def list(**params)
       response = get_request("eventsub/subscriptions", params: params)
-      Collection.from_response(response, type: EventsubSubscription)
+      collection(response, type: EventsubSubscription)
     end
 
     def create(type:, version:, condition:, transport:, **params)

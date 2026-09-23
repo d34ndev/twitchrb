@@ -4,7 +4,7 @@ module Twitch
     def list(**params)
       response = get_request("streams/markers", params: params)
 
-      Collection.from_response(response, type: StreamMarker)
+      collection(response, type: StreamMarker)
     end
 
     # Required scope: channel:manage:broadcast
