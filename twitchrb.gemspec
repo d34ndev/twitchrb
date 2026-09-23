@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.summary       = "A Ruby library for interacting with the Twitch Helix API"
   spec.homepage      = "https://deanpcmad.com"
   spec.license       = "MIT"
-  spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
+  spec.required_ruby_version = Gem::Requirement.new(">= 3.3")
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/deanpcmad/twitchrb"

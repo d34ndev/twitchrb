@@ -4,7 +4,7 @@ inherit_gem: { rubocop-rails-omakase: rubocop.yml }
 AllCops:
   Exclude:
     - 'test/**/*'
-  TargetRubyVersion: 4.0
+  TargetRubyVersion: 3.3
 
 # Overwrite or add rules to create your own house style
 #
