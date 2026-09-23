@@ -62,12 +62,10 @@ the user disconnected your app), the error from Twitch is raised, e.g. `Twitch::
 Most endpoints accept a **user access token** — issued for a specific Twitch user via the
 [authorization code](https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#authorization-code-grant-flow)
 or [device code](https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#device-code-grant-flow) flows,
-and required for anything that acts on behalf of a user (sending chat, managing channels, etc.).
+and required for anything that acts on behalf of a user (managing channels, polls, rewards, etc.).
 
-Some endpoints require an **app access token** instead — issued to your application, not a user. These
-are the EventSub APIs (subscriptions over webhooks, conduits, and shards), plus a few others noted in
-each section below. App tokens are obtained with the `client_credentials` grant and need only your
-Client ID and Client Secret:
+An **app access token** is issued to your application, not a user. App tokens are obtained with the
+`client_credentials` grant and need only your Client ID and Client Secret:
 
 ```ruby
 oauth = Twitch::OAuth.new(client_id: "abc123", client_secret: "your-client-secret")
@@ -78,6 +76,25 @@ token = oauth.create(grant_type: "client_credentials")
 
 App tokens expire (typically after ~60 days). Use `oauth.validate(token: ...)` to check the remaining
 lifetime, and `oauth.create(grant_type: "client_credentials")` to mint a fresh one when needed.
+
+**These require an app access token:**
+
+- EventSub over webhooks or conduits: `eventsub_subscriptions` and `eventsub_conduits` (including shards).
+  EventSub over WebSockets requires a user access token instead.
+- `users.authorization`
+- `extensions.transactions`, and `extensions.bits_products`/`update_bits_product` (the token's Client ID must be the extension's)
+
+**These also accept an app access token**, as long as the user in the request (e.g. `sender_id` or
+`moderator_id`) has previously authorized your app with the required scope through one of the user token flows.
+This is how chatbots can act without storing each user's token. Chat endpoints need the bot account to have
+granted `user:bot`, and the broadcaster to have granted `channel:bot` or made the bot a moderator — see
+[Chatbots](https://dev.twitch.tv/docs/chat/authenticating/) for details.
+
+- Chat: `chat_messages.create`, `chat_messages.delete`, `announcements.create`, `shoutouts.create`,
+  `pinned_chat_messages` (all methods), `chatters.list`, `chat_settings.update`
+- Moderation: `automod` (all methods), `banned_users` (all methods), `blocked_terms` (all methods),
+  `moderators.channels`, `shield_mode` (all methods), `warnings.create`, `suspicious_users` (all methods)
+- Ads: `channels.commercial`, `ads.schedule`, `ads.snooze`
 
 ### Resources
 
