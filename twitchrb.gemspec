@@ -7,13 +7,14 @@ Gem::Specification.new do |spec|
   spec.email         = [ "dean@deanpcmad.com" ]
 
   spec.summary       = "A Ruby library for interacting with the Twitch Helix API"
-  spec.homepage      = "https://deanpcmad.com"
+  spec.homepage      = "https://github.com/d34ndev/twitchrb"
   spec.license       = "MIT"
   spec.required_ruby_version = Gem::Requirement.new(">= 3.3")
 
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "https://github.com/deanpcmad/twitchrb"
-  spec.metadata["changelog_uri"] = "https://github.com/deanpcmad/twitchrb/blob/main/CHANGELOG.md"
+  spec.metadata["source_code_uri"] = "https://github.com/d34ndev/twitchrb"
+  spec.metadata["changelog_uri"] = "https://github.com/d34ndev/twitchrb/blob/main/CHANGELOG.md"
+  spec.metadata["bug_tracker_uri"] = "https://github.com/d34ndev/twitchrb/issues"
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.

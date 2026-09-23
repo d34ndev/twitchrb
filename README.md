@@ -1,6 +1,6 @@
 # TwitchRB
 
-[![CI](https://github.com/deanpcmad/twitchrb/actions/workflows/ci.yml/badge.svg)](https://github.com/deanpcmad/twitchrb/actions/workflows/ci.yml)
+[![CI](https://github.com/d34ndev/twitchrb/actions/workflows/ci.yml/badge.svg)](https://github.com/d34ndev/twitchrb/actions/workflows/ci.yml)
 [![Gem Version](https://badge.fury.io/rb/twitchrb.svg)](https://badge.fury.io/rb/twitchrb)
 [![Downloads](https://img.shields.io/gem/dt/twitchrb.svg)](https://rubygems.org/gems/twitchrb)
 
@@ -1319,7 +1319,7 @@ OAuth token. Pass the JWT as the client's `access_token`. See
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/deanpcmad/twitchrb.
+Bug reports and pull requests are welcome on GitHub at https://github.com/d34ndev/twitchrb.
 
 ## License
 

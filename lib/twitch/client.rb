@@ -261,7 +261,7 @@ module Twitch
         conn.request :authorization, :Bearer, -> { access_token }
 
         conn.headers = {
-          "User-Agent" => "twitchrb/v#{VERSION} (github.com/deanpcmad/twitchrb)",
+          "User-Agent" => "twitchrb/v#{VERSION} (github.com/d34ndev/twitchrb)",
           "Client-ID": client_id
         }
 
