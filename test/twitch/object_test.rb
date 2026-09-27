@@ -15,7 +15,7 @@ class ObjectTest < Minitest::Test
 
   def test_array
     object = Twitch::Object.new(foo: [ { bar: :baz } ])
-    assert_equal OpenStruct, object.foo.first.class
+    assert_equal Twitch::Object, object.foo.first.class
     assert_equal :baz, object.foo.first.bar
   end
 
@@ -98,5 +98,61 @@ class ObjectTest < Minitest::Test
     object = Twitch::Object.new("settings" => { "slow_mode" => true })
 
     assert_equal({ settings: { slow_mode: true } }, object.as_json)
+  end
+
+  def test_hash_access
+    object = Twitch::Object.new("id" => "141981764")
+    assert_equal "141981764", object[:id]
+    assert_equal "141981764", object["id"]
+  end
+
+  def test_missing_attribute_returns_nil
+    object = Twitch::Object.new(foo: "bar")
+    assert_nil object.baz
+    refute object.respond_to?(:baz)
+    assert object.respond_to?(:foo)
+  end
+
+  def test_setting_attributes
+    object = Twitch::Object.new(foo: "bar")
+    object.foo = "baz"
+    object[:qux] = { quux: 1 }
+    assert_equal "baz", object.foo
+    assert_equal 1, object.qux.quux
+  end
+
+  def test_attributes_named_after_private_methods
+    object = Twitch::Object.new(format: "mp4", test: true, type: "live")
+    assert_equal "mp4", object.format
+    assert_equal true, object.test
+    assert_equal "live", object.type
+  end
+
+  def test_unknown_method_with_arguments_raises
+    assert_raises(NoMethodError) { Twitch::Object.new(foo: "bar").foo(1) }
+  end
+
+  def test_dig
+    object = Twitch::Object.new(data: [ { images: { url_1x: "https://example.com/1x.png" } } ])
+    assert_equal "https://example.com/1x.png", object.dig(:data, 0, :images, :url_1x)
+    assert_nil object.dig(:missing, :id)
+  end
+
+  def test_each_pair
+    object = Twitch::Object.new(id: "1", login: "twitchdev")
+    assert_equal [ [ :id, "1" ], [ :login, "twitchdev" ] ], object.each_pair.to_a
+  end
+
+  def test_equality
+    assert_equal Twitch::Object.new(foo: { bar: 1 }), Twitch::Object.new("foo" => { "bar" => 1 })
+    refute_equal Twitch::Object.new(foo: 1), Twitch::Object.new(foo: 2)
+  end
+
+  def test_inspect
+    assert_equal '#<Twitch::User id="1">', Twitch::User.new(id: "1").inspect
+  end
+
+  def test_nil_attributes
+    assert_equal({}, Twitch::Object.new(nil).to_h)
   end
 end

@@ -4,6 +4,20 @@ All notable changes to `twitchrb` are documented in this file.
 
 Published release notes were sourced from GitHub releases where available. Older tag-only versions and the current unreleased work were reconstructed from local git history.
 
+## [Unreleased]
+
+### Changed
+
+- Response objects no longer use `OpenStruct`, and the `ostruct` dependency has been removed. `Twitch::Object` now
+  stores attributes in a hash and reads them through dot notation or hash access (`object[:id]`). Building objects is
+  much faster and uses less memory. Missing attributes still return `nil`.
+- Nested objects are now `Twitch::Object`s rather than `OpenStruct`s, and so are the responses from `Twitch::OAuth`.
+  Code that checks for `OpenStruct` or calls `OpenStruct`-only methods needs updating.
+
+### Added
+
+- `key?` on response objects, to check whether an attribute is present.
+
 ## [2.0.0] - 2026-09-23
 
 This release adds every remaining Helix endpoint, automatic pagination, automatic token refresh, and EventSub

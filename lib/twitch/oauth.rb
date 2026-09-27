@@ -59,7 +59,7 @@ module Twitch
 
       return false if response.status != 200
 
-      JSON.parse(response.body, object_class: OpenStruct)
+      Object.new(JSON.parse(response.body))
     end
 
     def revoke(token:)
@@ -86,7 +86,7 @@ module Twitch
 
       raise ErrorFactory.create(response.body, response.status) if response.status != 200
 
-      JSON.parse(response.body, object_class: OpenStruct)
+      Object.new(JSON.parse(response.body))
     end
 
     def scope_string(scopes)
