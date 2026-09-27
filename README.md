@@ -103,7 +103,19 @@ granted `user:bot`, and the broadcaster to have granted `channel:bot` or made th
 The gem maps as closely as we can to the Twitch API so you can easily convert API examples to gem code.
 
 Responses are created as objects like `Twitch::Channel`. Having types like `Twitch::User` is handy for understanding what
-type of object you're working with. They're built using OpenStruct so you can easily access data in a Ruby-ish way.
+type of object you're working with. Attributes can be read with dot notation or like a hash, and nested data is wrapped too:
+
+```ruby
+user = @client.users.retrieve(username: "twitchdev")
+
+user.display_name                   #=> "TwitchDev"
+user[:display_name]                 #=> "TwitchDev"
+user.missing_attribute              #=> nil
+
+# Convert back to a hash or JSON, including nested data
+user.to_h
+user.to_json
+```
 
 ### Pagination
 

@@ -3,7 +3,6 @@ PATH
   specs:
     twitchrb (2.0.0)
       faraday (>= 2.14.3, < 3)
-      ostruct (~> 0.6.0)
 
 GEM
   remote: https://rubygems.org/
@@ -58,7 +57,6 @@ GEM
     minitest (5.27.0)
     net-http (0.9.1)
       uri (>= 0.11.1)
-    ostruct (0.6.3)
     parallel (2.1.0)
     parser (3.3.11.1)
       ast (~> 2.4.1)
@@ -74,7 +72,7 @@ GEM
     racc (1.8.1)
     rack (3.2.6)
     rainbow (3.1.1)
-    rake (12.3.3)
+    rake (13.4.2)
     rdoc (7.2.0)
       erb
       psych (>= 4.0.0)
@@ -135,7 +133,7 @@ DEPENDENCIES
   dotenv
   irb
   minitest (~> 5.0)
-  rake (~> 12.0)
+  rake (~> 13.0)
   rubocop-rails-omakase
   twitchrb!
   webmock
