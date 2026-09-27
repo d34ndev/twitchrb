@@ -4,7 +4,9 @@ All notable changes to `twitchrb` are documented in this file.
 
 Published release notes were sourced from GitHub releases where available. Older tag-only versions and the current unreleased work were reconstructed from local git history.
 
-## [Unreleased]
+## [2.1.0] - 2026-09-27
+
+Completes the 2.0 cleanup: response objects no longer depend on OpenStruct.
 
 ### Changed
 
@@ -13,6 +15,7 @@ Published release notes were sourced from GitHub releases where available. Older
   much faster and uses less memory. Missing attributes still return `nil`.
 - Nested objects are now `Twitch::Object`s rather than `OpenStruct`s, and so are the responses from `Twitch::OAuth`.
   Code that checks for `OpenStruct` or calls `OpenStruct`-only methods needs updating.
+- The packaged gem now only contains `lib/`, the README, LICENSE and CHANGELOG, instead of every file in the repo.
 
 ### Added
 
