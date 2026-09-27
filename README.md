@@ -11,7 +11,7 @@ TwitchRB is the easiest and most complete Ruby library for the [Twitch Helix API
 Add this line to your application's Gemfile:
 
 ```ruby
-gem "twitchrb"
+gem "twitchrb", "~> 2.1"
 ```
 
 Upgrading from 1.x? Version 2.0 has breaking changes. See [Upgrading from 1.x](CHANGELOG.md#upgrading-from-1x) in the changelog.
